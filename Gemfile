@@ -8,6 +8,6 @@ ruby '2.5.1'
 
 gem 'faker'
 gem 'fasterer'
-gem 'nokogiri'
 gem 'rspec'
 gem 'rubocop', require: false
+gem 'docx', '~> 0.2.07', :require => ["docx"]
