@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
 class Console
-  attr_reader :wins, :hint, :attempts, :level, :name
+  attr_reader :hints, :attempts, :level, :name
   include Uploader
   include Validator
   include Game
   include Difficult
 
   def initialize
-    @wins = 0
     puts "Hello, lets play the 'Codebreaker' game".green
     what_next
   end
+
+  private
 
   def what_next
     what_next_text
@@ -19,53 +20,68 @@ class Console
     when 'rules' then show_rules
     when 'stats' then show_statistics
     when 'start' then go_game
-    when 'save' then go_save
     when 'exit' then puts 'Goodbye'.pink
     end
   end
 
-  private
-
-  def greeting
-    puts "What is your name?\nEnter 'random' to auto-create your name".green
-    player_name = validated_name
-    puts "You log in as #{player_name}".green
-    player_name
+  def registration
+    puts "What is your name?\nEnter ".green + 'random'.pink + ' to auto-create your name'.green
+    @name = validated_name
+    selected = select_difficult
+    @hints = selected[:hints]
+    @attempts = selected[:attempts]
+    @level = selected[:level]
+    @breaker_numbers = [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
+    @copy_for_hints = @breaker_numbers.clone
+    puts "You log in as #{@name}\nChoosen difficult is #{@level}".green
   end
 
   def what_next_text
     puts "Choose the command".yellow
     puts '-Enter '.green + 'rules'.pink + ' if you want to see rules of the game'.green
-   # puts '-Enter '.green + 'start'.pink + ' if you want to start the game'.green unless @attempts.zero?
+    puts '-Enter '.green + 'start'.pink + ' if you want to start the game'.green
     puts '-Enter '.green + 'stats'.pink + ' if you want to see the statistics of players results'.green
-    puts '-Enter '.green + 'save'.pink + ' if you want to save your progress'.green
     puts '-Enter '.green + 'exit'.pink + ' if you want to quite the game'.green
   end
 
   def go_game
-    @name = greeting if @name.nil?
-    select_difficult if @attempts == 10
-    return what_next if @attempts.zero?
+    registration if @name.nil?
+    lose if @attempts.zero?
     puts "You have #{@attempts} attempts and #{@hints} hints".pink
-    breaker_numbers = [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
-    puts 'Make your guess'.green
-    puts "You need to enter 'hint' or four numbers between 1 and 6.".yellow
+    puts "Make your guess\n".green + 'You need to enter four numbers between 1 and 6 '.yellow
+    @hints.zero? ? (puts "You don't have any hints".yellow) : (puts "Or enter 'hint' to open one digit from code".green)
     guess = validated_guess
-    if guess == 'hint'
-      @hints.zero? ? (puts "You don't have any hints".red) : (p show_hint(breaker_numbers))
-      guess = validated_guess
-    end
-    show_result(start(guess, breaker_numbers))
+    show_hint if guess == 'hint'
+    result = start(guess, @breaker_numbers)
+    puts 'Your result is '.green + result.to_s.pink
+    return win if result == ['+', '+', '+', '+']
+    go_game
   end
-#start_new_game
-  def show_result(result)
-    puts "Your result is - #{result}\nWins - #{@wins}"
-    puts 'Game over'.red + ' you can save your progress'.green if @attempts.zero?
+  
+  def show_hint
+    if @hints.zero?
+      puts "You don't have any hints".red 
+      go_game
+    end
+    showed = hint(@copy_for_hints)
+    puts 'Code contains this number: '.green + showed.to_s.pink
+    @copy_for_hints.delete_at(@copy_for_hints.index showed)
+    @hints -= 1
+    go_game
+  end
+
+  def win
+    puts 'You win'.green
+    puts '-Enter '.green + 'yes'.pink + ' if you want to save your progress'.green
+    want_to_save = gets.chomp.downcase
+    save_to_db if want_to_save == 'yes'
+    @name = nil
     what_next
   end
 
-  def go_save
-    save_to_db
+  def lose
+    puts 'Game over, you lose if you want you can start a new game'.red
+    @name = nil
     what_next
   end
 
@@ -77,7 +93,7 @@ class Console
 
     puts "Hall of fame:\n".green
     load_db.each do |player|
-      puts "#{player.name} wins - #{player.wins} on #{player.level} level"
+      puts "#{player.name} on #{player.level} level"
     end
     what_next
   end
@@ -88,5 +104,6 @@ class Console
     doc.paragraphs.each do |paragraph|
       puts paragraph
     end
+    what_next
   end
 end

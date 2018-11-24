@@ -3,7 +3,7 @@
 module Validator
   def validated_choice
     choice = gets.chomp.downcase
-    return choice if %w[rules start stats save exit].include?(choice)
+    return choice if %w[rules start stats exit].include?(choice)
 
     puts "You have passed unexpected command '#{choice}'. Please choose one from listed commands".red
     what_next
@@ -36,13 +36,13 @@ module Validator
     validated_guess
   end
 
-  def validate_difficult
+  def validated_difficult
     puts 'Select difficulty: '.yellow + 'easy, '.green + 'medium, '.pink + 'hell'.red
     level = gets.chomp.downcase
     return level if %w[easy medium hell].include? level
     return puts 'Goodbye'.pink if level == 'exit'
 
     puts "I dont have '#{level}' level, try one more time".red
-    validate_difficult
+    validated_difficult
   end
 end
