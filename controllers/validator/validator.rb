@@ -15,7 +15,7 @@ module Validator
   def validated_name
     name = gets.chomp.downcase
     return FFaker::Name.name if name == 'random'
-    return name.capitalize if name.size > 2 && name.size < 21
+    return name.capitalize if (3..20).cover? name.size
     return GOODBYE_MSG.call if name == 'exit'
 
     WRONG_NAME_MSG.call

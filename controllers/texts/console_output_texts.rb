@@ -2,7 +2,7 @@
 
 module ConsoleTexts
   RULES = '-Enter '.green + 'rules'.pink + ' if you want to see rules of the game'.green
-  STATS = '-Enter '.green + 'stats'.pink + ' if you want to see the statistics of players results'.green
+  STATS = '-Enter '.green + 'stats'.pink + ' if you want to see the statistics of users results'.green
   START = '-Enter '.green + 'start'.pink + ' if you want to start the game'.green
   EXIT = -'-Enter '.green + 'exit'.pink + ' if you want to quite the game'.green
 
@@ -16,6 +16,8 @@ module ConsoleTexts
   WIN_MSG = -> { puts "You win\n-Enter ".green + 'yes'.pink + ' if you want to save your progress'.green }
   LOSE_MSG = -> { puts 'Game over, you lose if you want you can start a new game'.red }
   EMPTY_DB_MSG = -> { puts 'You are the first one'.green }
+  SHOW_DB_MSG = 'Hall of fame:'.yellow
+  SORT_DB = ->(db) { db.sort_by { |user| [user.all_attempts, -user.attempts, -user.hints] } }
 
   def what_next_text
     puts 'Choose the command'.yellow
@@ -32,9 +34,12 @@ module ConsoleTexts
   end
 
   def show_db(db)
-    puts "Hall of fame:\n".green
-    db.each do |player|
-      puts "#{player.name} on #{player.level} level"
+    puts SHOW_DB_MSG
+    position = 0
+    SORT_DB.call(db).each do |user|
+      position += 1
+      puts "#{position}) Name: #{user.name} Difficult: #{user.level}".pink
+      puts "Attempts: #{user.all_attempts}/#{user.attempts} Hints: #{user.level == 'hell' ? 1 : 2}/#{user.hints}".green
     end
   end
 

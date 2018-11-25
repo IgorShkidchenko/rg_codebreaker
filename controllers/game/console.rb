@@ -1,12 +1,14 @@
 # frozen_string_literal: true
 
 class Console
-  attr_reader :hints, :attempts, :level, :name
+  attr_reader :hints, :attempts, :level, :name, :all_attempts
   include Uploader
   include Validator
   include Game
   include Difficult
   include ConsoleTexts
+  BREAKER_NUMBERS = []
+  BREAKER_NUMBERS_COPY = []
 
   def initialize
     GREETING_MSG.call
@@ -28,8 +30,8 @@ class Console
   def registration
     reg_first_step
     reg_second_step
-    p @breaker_numbers = [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
-    @copy_for_hints = @breaker_numbers.clone
+    p BREAKER_NUMBERS.replace [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
+    BREAKER_NUMBERS_COPY.replace BREAKER_NUMBERS.clone
     LOGIN_AS_MSG.call(@name, @level)
   end
 
@@ -43,15 +45,17 @@ class Console
     @hints = selected[:hints]
     @attempts = selected[:attempts]
     @level = selected[:level]
+    @all_attempts = selected[:attempts]
   end
 
   def go_game
     registration if @name.nil?
-    lose if @attempts.zero?
+    return lose if @attempts.zero?
+
     game_info_text(@attempts, @hints)
     guess = validated_guess
     show_hint if guess == 'hint'
-    result = start(guess, @breaker_numbers)
+    result = start(guess, BREAKER_NUMBERS)
     SHOW_RESULT_MSG.call(result)
     return win if result == ['+', '+', '+', '+']
 
@@ -63,9 +67,9 @@ class Console
       ZERO_HINTS_MSG.call
       go_game
     end
-    showed = hint(@copy_for_hints)
+    showed = hint(BREAKER_NUMBERS_COPY)
     SHOWED_HINT_MSG.call(showed)
-    @copy_for_hints.delete_at(@copy_for_hints.index(showed))
+    BREAKER_NUMBERS_COPY.delete_at(BREAKER_NUMBERS_COPY.index(showed))
     @hints -= 1
     go_game
   end
