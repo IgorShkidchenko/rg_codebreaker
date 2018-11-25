@@ -13,7 +13,7 @@ module Game
       if breaker_num == user_num
         checked << user_num if user_numbers.count(breaker_num) > 1
         '+'
-      elsif breaker_num != user_num && breaker_numbers.include?(user_num) && !(checked.include?(user_num))
+      elsif breaker_num != user_num && breaker_numbers.include?(user_num) && !checked.include?(user_num)
         checked << user_num
         '-'
       end

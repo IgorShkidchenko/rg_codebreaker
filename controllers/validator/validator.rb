@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 module Validator
+  include ValidatorsTexts
+
   def validated_choice
     choice = gets.chomp.downcase
     return choice if %w[rules start stats exit].include?(choice)
 
-    puts "You have passed unexpected command '#{choice}'. Please choose one from listed commands".red
+    WRONG_COMMAND_MSG.call(choice)
     what_next
     validated_choice
   end
@@ -14,16 +16,16 @@ module Validator
     name = gets.chomp.downcase
     return FFaker::Name.name if name == 'random'
     return name.capitalize if name.size > 2 && name.size < 21
-    return puts 'Goodbye'.pink if name == 'exit'
+    return GOODBYE_MSG.call if name == 'exit'
 
-    puts 'Name must be from 3 to 20 characters'.red
+    WRONG_NAME_MSG.call
     validated_name
   end
 
   def validated_guess
     guess = gets.chomp.downcase
     return guess if guess == 'hint'
-    return puts 'Goodbye'.pink if guess == 'exit'
+    return GOODBYE_MSG.call if guess == 'exit'
 
     guess.chars.each { |guess_char| return guess_error unless %w[1 2 3 4 5 6].include? guess_char }
     return guess_error if guess.size != 4
@@ -32,17 +34,17 @@ module Validator
   end
 
   def guess_error
-    puts "You need to enter 'hint' or four numbers between 1 and 6.".red
+    WRONG_GUESS_MSG.call
     validated_guess
   end
 
   def validated_difficult
-    puts 'Select difficulty: '.yellow + 'easy, '.green + 'medium, '.pink + 'hell'.red
+    SELECT_DIFFICULT_MSG.call
     level = gets.chomp.downcase
     return level if %w[easy medium hell].include? level
-    return puts 'Goodbye'.pink if level == 'exit'
+    return GOODBYE_MSG.call if level == 'exit'
 
-    puts "I dont have '#{level}' level, try one more time".red
+    WRONG_LEVEL_MSG.call(level)
     validated_difficult
   end
 end

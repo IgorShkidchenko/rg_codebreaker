@@ -1,0 +1,15 @@
+--- !ruby/object:Console
+name: Igor
+hints: 2
+attempts: 14
+level: easy
+breaker_numbers:
+- 3
+- 3
+- 2
+- 3
+copy_for_hints:
+- 3
+- 3
+- 2
+- 3

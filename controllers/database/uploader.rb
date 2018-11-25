@@ -11,6 +11,6 @@ module Uploader
   end
 
   def save_to_db
-    File.open(PATH, 'a') { |f| f.write self.to_yaml }
+    File.open(PATH, 'a') { |f| f.write to_yaml }
   end
 end
