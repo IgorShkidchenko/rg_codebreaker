@@ -4,7 +4,6 @@
       "/home/ihorshkidchenko/RubyGarage/rg_codebreaker/autoload.rb": [
         null,
         null,
-        null,
         1,
         1,
         1,
@@ -316,27 +315,8 @@
         0,
         null,
         null
-      ],
-      "/home/ihorshkidchenko/RubyGarage/rg_codebreaker/spec/controllers_spec.rb": [
-        1,
-        4,
-        null,
-        1,
-        2,
-        null,
-        null,
-        1,
-        1,
-        1,
-        null,
-        null,
-        1,
-        1,
-        1,
-        null,
-        null
       ]
     },
-    "timestamp": 1543393405
+    "timestamp": 1543395835
   }
 }

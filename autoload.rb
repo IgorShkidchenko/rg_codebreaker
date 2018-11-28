@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'docx'
-require 'ffaker'
+require 'faker'
 require 'yaml'
 require_relative './helpers/colors'
 require_relative './controllers/database/uploader'
