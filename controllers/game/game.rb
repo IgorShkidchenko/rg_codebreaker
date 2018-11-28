@@ -2,7 +2,6 @@
 
 module Game
   def start(guess, breaker_numbers)
-    @attempts -= 1
     user_numbers = guess.chars.map(&:to_i)
     check_guess(breaker_numbers.zip(user_numbers), breaker_numbers, user_numbers).compact.sort!
   end

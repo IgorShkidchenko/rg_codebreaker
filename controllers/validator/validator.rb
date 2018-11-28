@@ -5,18 +5,19 @@ module Validator
 
   def validated_choice
     choice = gets.chomp.downcase
-    return choice if %w[rules start stats exit].include?(choice)
-
-    WRONG_COMMAND_MSG.call(choice)
-    what_next
-    validated_choice
+    until %w[rules start stats exit].include? choice
+      WRONG_COMMAND_MSG.call(choice)
+      what_next
+      choice = gets.chomp.downcase
+    end
+    choice
   end
-
+  
   def validated_name
     name = gets.chomp.downcase
     return Faker::Name.name if name == 'random'
-    return name.capitalize if (3..20).cover? name.size
     return GOODBYE_MSG.call if name == 'exit'
+    return name.capitalize if (3..20).cover? name.size
 
     WRONG_NAME_MSG.call
     validated_name

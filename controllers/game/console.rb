@@ -24,12 +24,10 @@ class Console
     end
   end
 
-  private
-
   def registration
     reg_first_step
     reg_second_step
-    p BREAKER_NUMBERS.replace [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
+    BREAKER_NUMBERS.replace [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
     BREAKER_NUMBERS_COPY.replace BREAKER_NUMBERS.clone
     LOGIN_AS_MSG.call(@name, @level)
   end
@@ -55,6 +53,7 @@ class Console
     guess = validated_guess
     show_hint if guess == 'hint'
     result = start(guess, BREAKER_NUMBERS)
+    @attempts -= 1
     SHOW_RESULT_MSG.call(result)
     return win if result == ['+', '+', '+', '+']
 

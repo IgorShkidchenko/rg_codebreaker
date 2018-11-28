@@ -40,3 +40,15 @@ hints: 0
 attempts: 1
 level: hell
 all_attempts: 5
+--- !ruby/object:Console
+name: Nick
+hints: 2
+attempts: 15
+level: easy
+all_attempts: 15
+--- !ruby/object:Console
+name: Nick
+hints: 2
+attempts: 15
+level: easy
+all_attempts: 15
