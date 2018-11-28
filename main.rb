@@ -1,4 +1,5 @@
 # frozen_string_literal: true
 
 require_relative 'autoload'
-Console.new
+new_game = Console.new
+new_game.what_next

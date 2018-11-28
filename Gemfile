@@ -11,3 +11,4 @@ gem 'faker'
 gem 'fasterer'
 gem 'rspec'
 gem 'rubocop', require: false
+gem 'simplecov', require: false, group: :test

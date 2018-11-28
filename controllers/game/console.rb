@@ -12,10 +12,7 @@ class Console
 
   def initialize
     GREETING_MSG.call
-    what_next
   end
-
-  private
 
   def what_next
     what_next_text
@@ -26,6 +23,8 @@ class Console
     when 'exit' then GOODBYE_MSG.call
     end
   end
+
+  private
 
   def registration
     reg_first_step
