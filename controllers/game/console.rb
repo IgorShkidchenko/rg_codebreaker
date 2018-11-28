@@ -63,7 +63,7 @@ class Console
   def show_hint
     if @hints.zero?
       ZERO_HINTS_MSG.call
-      go_game
+      return go_game
     end
     showed = hint(BREAKER_NUMBERS_COPY)
     SHOWED_HINT_MSG.call(showed)

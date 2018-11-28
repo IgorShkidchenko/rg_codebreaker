@@ -2,7 +2,7 @@
 
 RSpec.describe Console do
   let(:subject) { described_class.new }
-  
+
   describe '#check_validator_module' do
     context 'valid_input' do
       it 'check_validated_name' do
@@ -43,6 +43,24 @@ RSpec.describe Console do
       it 'check_guess_error' do
         allow(subject).to receive(:validated_guess)
         expect { subject.guess_error }.to output(/You need to enter 'hint' or four numbers between 1 and 6./).to_stdout
+      end
+
+      it 'check_choice_error' do
+        allow(subject).to receive(:validated_choice)
+        allow(subject).to receive(:what_next)
+        choice = ''
+        expect { subject.choice_error(choice) }.to output(/You have passed unexpected command '#{choice}'/).to_stdout
+      end
+
+      it 'check_name_error' do
+        allow(subject).to receive(:validated_name)
+        expect { subject.name_error }.to output(/Name must be from 3 to 20 characters/).to_stdout
+      end
+
+      it 'check_difficult_error' do
+        allow(subject).to receive(:validated_difficult)
+        lvl = ''
+        expect { subject.difficult_error(lvl) }.to output(/I dont have '#{lvl}' level, try one more time/).to_stdout
       end
     end
   end
