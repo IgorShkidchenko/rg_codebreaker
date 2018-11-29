@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
 class Console
-  attr_reader :hints, :attempts, :level, :name, :all_attempts
   include Uploader
   include Validator
-  include Game
-  include Difficult
   include ConsoleTexts
-  BREAKER_NUMBERS = []
-  BREAKER_NUMBERS_COPY = []
 
   def initialize
-    GREETING_MSG.call
+    puts GREETING_MSG
   end
 
   def what_next
@@ -19,75 +14,70 @@ class Console
     case validated_choice
     when 'rules' then show_rules
     when 'stats' then show_statistics
-    when 'start' then go_game
-    when 'exit' then GOODBYE_MSG.call
+    when 'start' then registration
+    when 'exit' then puts GOODBYE_MSG
     end
   end
 
   def registration
-    reg_first_step
-    reg_second_step
-    BREAKER_NUMBERS.replace [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
-    BREAKER_NUMBERS_COPY.replace BREAKER_NUMBERS.clone
-    LOGIN_AS_MSG.call(@name, @level)
-  end
-
-  def reg_first_step
-    WHAT_NAME_MSG.call
-    @name = validated_name
-  end
-
-  def reg_second_step
-    selected = select_difficult
-    @hints = selected[:hints]
-    @attempts = selected[:attempts]
-    @level = selected[:level]
-    @all_attempts = selected[:attempts]
+    puts WHAT_NAME_MSG
+    name = validated_name
+    selected_difficult = select_difficult
+    @game = Game.new(name, selected_difficult)
+    login_as_msg(@game.name, @game.level)
+    go_game
   end
 
   def go_game
-    registration if @name.nil?
-    return lose if @attempts.zero?
-
-    game_info_text(@attempts, @hints)
+    game_info_text(@game.attempts, @game.hints)
     guess = validated_guess
     show_hint if guess == 'hint'
-    result = start(guess, BREAKER_NUMBERS)
-    @attempts -= 1
-    SHOW_RESULT_MSG.call(result)
+    result = @game.start(guess)
+    return lose if result == :lose
+
+    show_result_msg(result)
     return win if result == ['+', '+', '+', '+']
 
     go_game
   end
 
   def show_hint
-    if @hints.zero?
-      ZERO_HINTS_MSG.call
+    if @game.hints.zero?
+      puts ZERO_HINTS_MSG
       return go_game
     end
-    showed = hint(BREAKER_NUMBERS_COPY)
-    SHOWED_HINT_MSG.call(showed)
-    BREAKER_NUMBERS_COPY.delete_at(BREAKER_NUMBERS_COPY.index(showed))
-    @hints -= 1
+    showed = @game.hint
+    showed_hint_msg(showed)
     go_game
   end
 
   def win
-    WIN_MSG.call
+    puts WIN_MSG
     want_to_save = gets.chomp.downcase
-    save_to_db if want_to_save == 'yes'
-    @name = nil
+    save_result if want_to_save == 'yes'
     what_next
   end
 
+  def save_result
+    result = StatisticsResult.new(name: @game.name, attempts: @game.attempts, hints: @game.hints, level: @game.level)
+    save_to_db(result)
+  end
+
   def lose
-    LOSE_MSG.call
-    @name = nil
+    puts LOSE_MSG
     what_next
   end
 
   def show_statistics
-    load_db.empty? ? EMPTY_DB_MSG.call : show_db(load_db)
+    load_db.empty? ? (puts EMPTY_DB_MSG) : show_db(load_db)
     what_next
+  end
+
+  def select_difficult
+    case validated_difficult
+    when 'easy' then { hints: 2, attempts: 15, level: 'easy' }
+    when 'medium' then { hints: 1, attempts: 10, level: 'medium' }
+    when 'hell' then { hints: 1, attempts: 5, level: 'hell' }
+    end
   end
 end

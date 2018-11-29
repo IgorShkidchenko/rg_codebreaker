@@ -13,7 +13,7 @@ module Validator
   def validated_name
     name = gets.chomp.downcase
     return Faker::Name.name if name == 'random'
-    return GOODBYE_MSG.call if name == 'exit'
+    return puts GOODBYE_MSG if name == 'exit'
     return name.capitalize if (3..20).cover? name.size
 
     name_error
@@ -22,7 +22,7 @@ module Validator
   def validated_guess
     guess = gets.chomp.downcase
     return guess if guess == 'hint'
-    return GOODBYE_MSG.call if guess == 'exit'
+    return puts GOODBYE_MSG if guess == 'exit'
 
     guess.chars.each { |guess_char| return guess_error unless %w[1 2 3 4 5 6].include? guess_char }
     return guess_error if guess.size != 4
@@ -31,32 +31,32 @@ module Validator
   end
 
   def validated_difficult
-    SELECT_DIFFICULT_MSG.call
+    puts SELECT_DIFFICULT_MSG
     level = gets.chomp.downcase
     return level if %w[easy medium hell].include? level
-    return GOODBYE_MSG.call if level == 'exit'
+    return puts GOODBYE_MSG if level == 'exit'
 
     difficult_error(level)
   end
 
   def guess_error
-    WRONG_GUESS_MSG.call
+    puts WRONG_GUESS_MSG
     validated_guess
   end
 
   def choice_error(choice)
-    WRONG_COMMAND_MSG.call(choice)
+    wrong_command_msg(choice)
     what_next
     validated_choice
   end
 
   def name_error
-    WRONG_NAME_MSG.call
+    puts WRONG_NAME_MSG
     validated_name
   end
 
   def difficult_error(level)
-    WRONG_LEVEL_MSG.call(level)
+    wrong_level_msg(level)
     validated_difficult
   end
 end
