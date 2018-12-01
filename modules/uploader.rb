@@ -10,7 +10,7 @@ module Uploader
     YAML.load_stream(File.open(PATH))
   end
 
-  def save_to_db(result)
-    File.open(PATH, 'a') { |f| f.write result.to_yaml }
+  def save_to_db(results)
+    File.open(PATH, 'a') { |f| f.write results.to_yaml }
   end
 end

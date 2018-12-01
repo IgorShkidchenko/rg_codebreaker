@@ -1,13 +1,11 @@
 # frozen_string_literal: true
 
 RSpec.describe Game do
-  let(:game) { Game.new('John', hints: 2, attempts: 15, level: 'easy') }
+  let(:game) { Game.new(hints: 2, attempts: 15, level: 'easy') }
 
   context 'check_creation' do
-    it { expect(game.name).to eq('John') }
     it { expect(game.attempts).to eq(15) }
     it { expect(game.hints).to eq(2) }
-    it { expect(game.level).to eq('easy') }
   end
 
   context 'check_hint' do
@@ -16,28 +14,28 @@ RSpec.describe Game do
   end
 
   context 'check_attempts_decrease' do
-    it { expect { game.start('1111') }.to change { game.attempts }.by(-1) }
+    it { expect { game.start([1, 1, 1, 1]) }.to change { game.attempts }.by(-1) }
   end
 
   context 'check_start_with_[1, 2, 3, 4]' do
     before { game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     it do
-      guess = '3124'
+      guess = [3, 1, 2, 4]
       result = game.start(guess)
       expect(result).to eq ['+', '-', '-', '-']
     end
 
     it do
-      guess = '1524'
+      guess = [1, 5, 2, 4]
       result = game.start(guess)
       expect(result).to eq ['+', '+', '-']
     end
 
     it do
-      guess = '1234'
+      guess = [1, 2, 3, 4]
       result = game.start(guess)
-      expect(result).to eq ['+', '+', '+', '+']
+      expect(result).to eq :win
     end
   end
 
@@ -45,49 +43,49 @@ RSpec.describe Game do
     before { game.instance_variable_set(:@breaker_numbers, [6, 5, 4, 3]) }
 
     it do
-      guess = '5643'
+      guess = [5, 6, 4, 3]
       result = game.start(guess)
       expect(result).to eq ['+', '+', '-', '-']
     end
 
     it do
-      guess = '6411'
+      guess = [6, 4, 1, 1]
       result = game.start(guess)
       expect(result).to eq ['+', '-']
     end
 
     it do
-      guess = '6544'
+      guess = [6, 5, 4, 4]
       result = game.start(guess)
       expect(result).to eq ['+', '+', '+']
     end
 
     it do
-      guess = '3456'
+      guess = [3, 4, 5, 6]
       result = game.start(guess)
       expect(result).to eq ['-', '-', '-', '-']
     end
 
     it do
-      guess = '6666'
+      guess = [6, 6, 6, 6]
       result = game.start(guess)
       expect(result).to eq ['+']
     end
 
     it do
-      guess = '3456'
+      guess = [3, 4, 5, 6]
       result = game.start(guess)
       expect(result).to eq ['-', '-', '-', '-']
     end
 
     it do
-      guess = '2666'
+      guess = [2, 6, 6, 6]
       result = game.start(guess)
       expect(result).to eq ['-']
     end
 
     it do
-      guess = '2222'
+      guess = [2, 2, 2, 2]
       result = game.start(guess)
       expect(result).to eq []
     end
@@ -95,7 +93,7 @@ RSpec.describe Game do
 
   it 'check_start_with_[6, 6, 6, 6]' do
     game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
-    guess = '1661'
+    guess = [1, 6, 6, 1]
     result = game.start(guess)
     expect(result).to eq ['+', '+']
   end
