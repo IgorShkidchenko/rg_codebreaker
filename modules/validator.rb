@@ -2,8 +2,7 @@
 
 module Validator
   def validated_choice
-    choice = gets.chomp.downcase
-    Representer.goodbye if choice == 'exit'
+    choice = input
     return choice if %w[rules start stats].include? choice
 
     Representer.wrong_choice_msg
@@ -11,8 +10,7 @@ module Validator
   end
 
   def validated_name
-    name = gets.chomp.downcase
-    Representer.goodbye if name == 'exit'
+    name = input
     return name.capitalize if (3..20).cover? name.size
 
     Representer.wrong_name_msg
@@ -20,8 +18,7 @@ module Validator
   end
 
   def validated_difficult
-    difficult = gets.chomp.downcase
-    Representer.goodbye if difficult == 'exit'
+    difficult = input
     return difficult if %w[easy medium hell].include? difficult
 
     Representer.wrong_level_msg
@@ -29,8 +26,7 @@ module Validator
   end
 
   def validated_guess
-    guess = gets.chomp.downcase
-    Representer.goodbye if guess == 'exit'
+    guess = input
     return guess if guess == 'hint'
     return guess_error if guess.size != 4
 
@@ -41,5 +37,10 @@ module Validator
   def guess_error
     Representer.wrong_guess_msg
     validated_guess
+  end
+
+  def input
+    input = gets.chomp.downcase
+    input == 'exit' ? Representer.goodbye : input
   end
 end
