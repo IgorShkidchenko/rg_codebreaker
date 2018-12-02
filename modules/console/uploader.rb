@@ -10,6 +10,10 @@ module Uploader
     YAML.load_stream(File.open(PATH))
   end
 
+  def sort_db
+    load_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
+  end
+
   def save_to_db(results)
     File.open(PATH, 'a') { |f| f.write results.to_yaml }
   end

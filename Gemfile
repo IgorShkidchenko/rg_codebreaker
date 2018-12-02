@@ -5,9 +5,8 @@ source 'https://rubygems.org'
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 ruby '2.5.1'
-
-gem 'docx', '~> 0.2.07', require: ['docx']
 gem 'fasterer'
+gem 'i18n'
 gem 'rspec'
 gem 'rubocop', require: false
 gem 'simplecov', require: false, group: :test

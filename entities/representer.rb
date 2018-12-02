@@ -2,97 +2,85 @@
 
 class Representer
   class << self
-    RULES = '-Enter '.green + 'rules'.pink + ' if you want to see rules of the game'.green
-    STATS = '-Enter '.green + 'stats'.pink + ' if you want to see the statistics of users results'.green
-    START = '-Enter '.green + 'start'.pink + ' if you want to start the game'.green
-    EXIT = -'-Enter '.green + 'exit'.pink + ' if you want to quite the game'.green
-
     def greeting_msg
-      puts "Hello, lets play the 'Codebreaker' game".green
+      puts I18n.t('console.greeting')
     end
 
     def goodbye
-      puts 'Goodbye'.pink
+      puts I18n.t(:goodbye)
       exit
     end
 
     def what_next_text
-      puts 'Choose the command'.yellow
-      puts RULES
-      puts STATS
-      puts START
-      puts EXIT
+      puts I18n.t('console.choose_the_command')
     end
 
     def what_name_msg
-      puts "What is your name?\nEnter ".green + 'random'.pink + ' to auto-create your name'.green
-    end
-
-    def showed_hint_msg(showed)
-      puts 'Code contains this number: '.green + showed.to_s.pink
-    end
-
-    def zero_hints_msg
-      puts "You don't have any hints".red
-    end
-
-    def show_result_msg(result)
-      puts 'Your result is '.green + result.to_s.pink
-    end
-
-    def game_info_text(attempts, hints)
-      puts "You have #{attempts} attempts and #{hints} hints".green
-      puts "Make your guess\n".green + 'You need to enter four numbers between 1 and 6 '.yellow
-      hints.zero? ? (puts "You don't have any hints".pink) : (puts "Or enter 'hint' to open one digit from code".pink)
-    end
-
-    def win_msg
-      puts "You win\n-Enter ".green + 'yes'.pink + ' if you want to save your progress'.green
-    end
-
-    def lose_msg
-      puts 'Game over, you lose if you want you can start a new game'.red
-    end
-
-    def empty_db_msg
-      puts 'You are the first one'.green
-    end
-
-    def show_db(db)
-      puts 'Hall of fame:'.yellow
-      position = 0
-      db.each do |user|
-        position += 1
-        puts "#{position}) Name: #{user.name} Difficult: #{user.level}".pink
-        puts "Attempts: #{user.all_attempts}/#{user.left_attempts}
-              Hints: #{user.all_hints}/#{user.left_hints}".green
-      end
-    end
-
-    def show_rules(doc)
-      doc.paragraphs.each do |paragraph|
-        puts paragraph
-      end
+      puts I18n.t('console.what_name')
     end
 
     def select_difficult_msg
-      puts 'Select difficulty: '.yellow + 'easy, '.green + 'medium, '.pink + 'hell'.red
+      puts I18n.t('console.select_difficult')
+    end
+
+    def showed_hint_msg(showed)
+      puts I18n.t('console.showed_hint', showed: showed)
+    end
+
+    def zero_hints_msg
+      puts I18n.t('console.zero_hints')
+    end
+
+    def show_result_msg(result)
+      puts I18n.t('console.result', result: result)
+    end
+
+    def game_info_text(attempts, hints)
+      puts I18n.t('console.left_attempts_and_hints', attempts: attempts, hints: hints)
+      puts I18n.t('console.make_guess')
+      hints.zero? ? zero_hints_msg : (puts I18n.t('console.enter_hint'))
+    end
+
+    def win_msg
+      puts I18n.t('console.win')
+    end
+
+    def lose_msg
+      puts I18n.t('console.lose')
+    end
+
+    def empty_db_msg
+      puts I18n.t('console.empty_db')
+    end
+
+    def show_db(db)
+      position = 0
+      db.each do |user|
+        position += 1
+        puts I18n.t('console.stats_user_info', position: position, name: user.name, level: user.level)
+        puts I18n.t('console.stats_lefts', attempts: user.left_attempts, all_attempts: user.all_attempts,
+                                           hints: user.left_hints, all_hints: user.all_hints)
+      end
+    end
+
+    def show_rules
+      puts I18n.t('console.rules')
     end
 
     def wrong_name_msg
-      puts 'Name must be from 3 to 20 characters'.red
+      puts I18n.t('validator.wrong_name')
     end
 
     def wrong_guess_msg
-      puts "You need to enter 'hint' or four numbers between 1 and 6.".red
+      puts I18n.t('validator.wrong_guess')
     end
 
     def wrong_level_msg
-      puts 'I dont have such level, try one more time'.red
+      puts I18n.t('validator.wrong_level')
     end
 
     def wrong_choice_msg
-      puts 'You have passed unexpected command, try one more time'.red
+      puts I18n.t('validator.wrong_choice')
     end
   end
 end

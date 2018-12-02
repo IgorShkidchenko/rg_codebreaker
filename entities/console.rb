@@ -61,13 +61,12 @@ class Console
   end
 
   def rules
-    rules_path = './helpers/rules.docx'
-    Representer.show_rules(Docx::Document.open(rules_path))
+    Representer.show_rules
     what_next
   end
 
   def statistics
-    db = load_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
+    db = sort_db
     db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
     what_next
   end
