@@ -19,11 +19,22 @@ class Console
     end
   end
 
+  private
+
   def registration
     Representer.what_name_msg
-    @user = User.new
+    @user = User.new(validated_name, select_difficult)
     @game = Game.new(@user.difficult)
     go_game
+  end
+
+  def select_difficult
+    Representer.select_difficult_msg
+    case validated_difficult
+    when 'easy' then { hints: 2, attempts: 15, level: 'easy' }
+    when 'medium' then { hints: 1, attempts: 10, level: 'medium' }
+    when 'hell' then { hints: 1, attempts: 5, level: 'hell' }
+    end
   end
 
   def go_game
