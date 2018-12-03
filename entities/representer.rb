@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Representer
+  EXIT = -> { exit }
+
   class << self
     def greeting_msg
       puts I18n.t('console.greeting')
@@ -8,7 +10,7 @@ class Representer
 
     def goodbye
       puts I18n.t(:goodbye)
-      exit
+      EXIT.call
     end
 
     def what_next_text

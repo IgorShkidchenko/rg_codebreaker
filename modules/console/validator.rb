@@ -2,27 +2,30 @@
 
 module Validator
   def validated_choice
-    choice = input
-    return choice if %w[rules start stats].include? choice
+    loop do
+      choice = input
+      return choice if %w[rules start stats].include? choice
 
-    Representer.wrong_choice_msg
-    validated_choice
+      Representer.wrong_choice_msg
+    end
   end
 
   def validated_name
-    name = input
-    return name.capitalize if (3..20).cover? name.size
+    loop do
+      name = input
+      return name.capitalize if (3..20).cover? name.size
 
-    Representer.wrong_name_msg
-    validated_name
+      Representer.wrong_name_msg
+    end
   end
 
   def validated_difficult
-    difficult = input
-    return difficult if %w[easy medium hell].include? difficult
+    loop do
+      difficult = input
+      return difficult if %w[easy medium hell].include? difficult
 
-    Representer.wrong_level_msg
-    validated_difficult
+      Representer.wrong_level_msg
+    end
   end
 
   def validated_guess
@@ -33,6 +36,8 @@ module Validator
     guess.chars.each { |guess_char| return guess_error unless %w[1 2 3 4 5 6].include? guess_char }
     guess
   end
+
+  private
 
   def guess_error
     Representer.wrong_guess_msg

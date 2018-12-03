@@ -4,7 +4,7 @@ class Game
   attr_reader :hints, :attempts, :breaker_numbers
 
   def initialize(difficult)
-    @breaker_numbers = [rand(1..6), rand(1..6), rand(1..6), rand(1..6)]
+    @breaker_numbers = Array.new(4) { rand(1..6) }
     @breaker_numbers_copy = @breaker_numbers.clone
     @hints = difficult[:hints]
     @attempts = difficult[:attempts]

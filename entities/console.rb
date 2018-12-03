@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Console
+  attr_reader :user, :game
   include Uploader
   include Validator
 
@@ -18,8 +19,6 @@ class Console
     when 'start' then registration
     end
   end
-
-  private
 
   def registration
     Representer.what_name_msg

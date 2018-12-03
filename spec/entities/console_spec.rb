@@ -2,6 +2,8 @@
 
 RSpec.describe Console do
   let(:subject) { described_class.new }
+  let(:user) { double('User', name: 'John', difficult: { attempts: 15, hints: 2, level: 'easy' }) }
+  let(:game) { double('Game', attempts: 10, hints: 1) }
 
   context '.check_creation' do
     it { expect { subject }.to output(/Hello/).to_stdout }
@@ -33,61 +35,51 @@ RSpec.describe Console do
     end
   end
 
-  #    it 'check' do
-  #      allow(subject).to receive(:what_next).and_return(:registration)
-  #      expect(subject).to receive(:validated_name)
-  #      subject.what_next
-  #    end
+  context 'check_registration' do
+    it do
+      allow(subject).to receive(:go_game)
+      allow(subject).to receive(:validated_name).and_return(user.name)
+      allow(subject).to receive(:select_difficult).and_return(user.difficult)
+      subject.registration
+      expect(subject.user.name).to eq(user.name)
+    end
+  end
 
-  #   context 'check_registration' do
-  #     it do
-  #       allow(subject).to receive(:go_game)
-  #       allow(subject).to receive(:validated_name).and_return('Nick')
-  #       allow(subject).to receive(:select_difficult).and_return(hints: 2, attempts: 15, level: 'easy')
-  #       expect { subject.registration }.to output(/You log in as Nick/).to_stdout
-  #     end
-  #   end
+  context 'check_difficult' do
+    it do
+      allow(subject).to receive(:validated_difficult).and_return('easy')
+      expect(subject.select_difficult).to eq(hints: 2, attempts: 15, level: 'easy')
+    end
 
-  #   context 'check_show_hint' do
-  #     let(:game) { Game.new('John', hints: 2, attempts: 15, level: 'easy') }
+    it do
+      allow(subject).to receive(:validated_difficult).and_return('medium')
+      expect(subject.select_difficult).to eq(hints: 1, attempts: 10, level: 'medium')
+    end
 
-  #     before do
-  #       allow(subject).to receive(:go_game)
-  #     end
+    it do
+      allow(subject).to receive(:validated_difficult).and_return('hell')
+      expect(subject.select_difficult).to eq(hints: 1, attempts: 5, level: 'hell')
+    end
+  end
 
-  #     it 'check_with_some_hints' do
-  #       subject.instance_variable_set(:@game, game)
-  #       expect { subject.show_hint }.to output(/Code contains this number: /).to_stdout
-  #     end
+  context 'check_result' do
+    it do
+      allow(subject).to receive(:go_game)
+      expect(subject).to receive(:lose)
+      subject.check_result(:lose)
+    end
+  end
 
-  #     it 'check_with_zero_hints' do
-  #       game.instance_variable_set(:@hints, 0)
-  #       subject.instance_variable_set(:@game, game)
-  #       expect { subject.show_hint }.to output(/You don't have any hints/).to_stdout
-  #     end
-  #   end
+  context 'unnecessary' do
+    before { expect(subject).to receive(:what_next) }
 
-  #   # expect { subject.save_to_db }.to change { subject.load_db.count }.by(1)
-  #   # context 'check_go_game' do
-  #   #   before do
-  #   #     allow(subject).to receive(:select_difficult).and_return(hints: 2, attempts: 1, level: 'easy')
-  #   #     allow(subject).to receive(:validated_guess)
-  #   #   end
+    it { subject.lose }
+    it { subject.rules }
+    it { subject.statistics }
 
-  #   context 'check_difficult' do
-  #     it 'check_easy' do
-  #       allow(subject).to receive(:validated_difficult).and_return('easy')
-  #       expect(subject.select_difficult).to eq(hints: 2, attempts: 15, level: 'easy')
-  #     end
-
-  #     it 'check_medium' do
-  #       allow(subject).to receive(:validated_difficult).and_return('medium')
-  #       expect(subject.select_difficult).to eq(hints: 1, attempts: 10, level: 'medium')
-  #     end
-
-  #     it 'check_hell' do
-  #       allow(subject).to receive(:validated_difficult).and_return('hell')
-  #       expect(subject.select_difficult).to eq(hints: 1, attempts: 5, level: 'hell')
-  #     end
-  #   end
+    it do
+      allow(subject).to receive(:gets).and_return('')
+      subject.win
+    end
+  end
 end

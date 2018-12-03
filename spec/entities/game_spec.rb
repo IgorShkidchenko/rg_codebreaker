@@ -31,12 +31,6 @@ RSpec.describe Game do
       result = game.start(guess)
       expect(result).to eq ['+', '+', '-']
     end
-
-    it do
-      guess = [1, 2, 3, 4]
-      result = game.start(guess)
-      expect(result).to eq :win
-    end
   end
 
   context '#check_start_with_[6, 5, 4, 3]' do
@@ -91,10 +85,31 @@ RSpec.describe Game do
     end
   end
 
-  it '#check_start_with_[6, 6, 6, 6]' do
-    game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
-    guess = [1, 6, 6, 1]
-    result = game.start(guess)
-    expect(result).to eq ['+', '+']
+  context '#check_start_with_[6, 6, 6, 6]' do
+    it do
+      game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
+      guess = [1, 6, 6, 1]
+      result = game.start(guess)
+      expect(result).to eq ['+', '+']
+    end
+  end
+
+  context 'check_win' do
+    it do
+      game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4])
+      guess = [1, 2, 3, 4]
+      result = game.start(guess)
+      expect(result).to eq :win
+    end
+  end
+
+  context 'check_lose' do
+    it do
+      game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
+      game.instance_variable_set(:@attempts, 1)
+      guess = [1, 2, 3, 4]
+      result = game.start(guess)
+      expect(result).to eq :lose
+    end
   end
 end
