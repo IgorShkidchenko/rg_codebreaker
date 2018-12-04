@@ -1,51 +1,33 @@
 # frozen_string_literal: true
 
 module Validator
-  def validated_choice
-    loop do
-      choice = input
-      return choice if %w[rules start stats].include? choice
+  VALID_NUMBERS = %w[1 2 3 4 5 6].freeze
+  VALID_SIZE = 4
 
-      Representer.wrong_choice_msg
-    end
+  def valid_choice?(choice)
+    return false unless choice.is_a? String
+
+    Console::COMMANDS.value?(choice) ? true : Representer.wrong_choice_msg
   end
 
-  def validated_name
-    loop do
-      name = input
-      return name.capitalize if (3..20).cover? name.size
+  def valid_name?(name)
+    return false unless name.is_a? String
 
-      Representer.wrong_name_msg
-    end
+    (3..20).cover?(name.size) ? true : Representer.wrong_name_msg
   end
 
-  def validated_difficult
-    loop do
-      difficult = input
-      return difficult if %w[easy medium hell].include? difficult
+  def valid_difficult?(difficult)
+    return false unless difficult.is_a? String
 
-      Representer.wrong_level_msg
-    end
+    User::LEVELS.value?(difficult) ? true : Representer.wrong_level_msg
   end
 
-  def validated_guess
-    guess = input
-    return guess if guess == 'hint'
-    return guess_error if guess.size != 4
+  def valid_guess?(guess)
+    return false unless guess.is_a? String
+    return Representer.wrong_guess_msg if guess.size != VALID_SIZE
+    return true if guess == Console::HINT
 
-    guess.chars.each { |guess_char| return guess_error unless %w[1 2 3 4 5 6].include? guess_char }
-    guess
-  end
-
-  private
-
-  def guess_error
-    Representer.wrong_guess_msg
-    validated_guess
-  end
-
-  def input
-    input = gets.chomp.downcase
-    input == 'exit' ? Representer.goodbye : input
+    guess.chars.each { |guess_char| return Representer.wrong_guess_msg unless VALID_NUMBERS.include? guess_char }
+    true
   end
 end

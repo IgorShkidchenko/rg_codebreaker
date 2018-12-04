@@ -3,19 +3,25 @@
 class Game
   attr_reader :hints, :attempts, :breaker_numbers
 
-  def initialize(difficult)
+  ALL_GUESSED = ['+', '+', '+', '+'].freeze
+  WIN = :win
+  LOSE = :lose
+  GUESSED_THE_PLACE = '+'
+  GUESSED_THE_PRESENCE = '-'
+
+  def initialize(attempts, hints)
     @breaker_numbers = Array.new(4) { rand(1..6) }
     @breaker_numbers_copy = @breaker_numbers.clone
-    @hints = difficult[:hints]
-    @attempts = difficult[:attempts]
+    @hints = hints
+    @attempts = attempts
   end
 
   def start(user_input)
     @attempts -= 1
-    return :lose if @attempts.zero?
+    return LOSE if @attempts.zero?
 
     result = check_guess(user_input).compact.sort!
-    result == ['+', '+', '+', '+'] ? :win : result
+    result == ALL_GUESSED ? WIN : result
   end
 
   def hint
@@ -32,10 +38,10 @@ class Game
     @breaker_numbers.zip(user_input).map do |breaker_num, user_num|
       if breaker_num == user_num
         checked_numbers << user_num
-        '+'
+        GUESSED_THE_PLACE
       elsif presence_in_code?(checked_numbers, user_num)
         checked_numbers << user_num
-        '-'
+        GUESSED_THE_PRESENCE
       end
     end
   end

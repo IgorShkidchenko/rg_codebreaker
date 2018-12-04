@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 RSpec.describe Game do
-  let(:game) { Game.new(hints: 2, attempts: 15) }
+  let(:game) { Game.new(15, 2) }
+
+  before do
+    stub_const('Game::WIN', :win)
+    stub_const('Game::LOSE', :lose)
+    stub_const('Game::GUESSED_THE_PLACE', '+')
+    stub_const('Game::GUESSED_THE_PRESENCE', '-')
+    stub_const('Game::ALL_GUESSED', ['+', '+', '+', '+'])
+  end
 
   context '.check_creation' do
     it { expect(game.attempts).to eq(15) }

@@ -5,6 +5,11 @@ class Console
   include Uploader
   include Validator
 
+  COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
+  HINT = 'hint'
+  EXIT = 'exit'
+  YES = 'yes'
+
   def initialize
     @user = nil
     @game = nil
@@ -13,39 +18,31 @@ class Console
 
   def what_next
     Representer.what_next_text
-    case validated_choice
-    when 'rules' then rules
-    when 'stats' then statistics
-    when 'start' then registration
+    choice = user_input until valid_choice?(choice)
+    case choice
+    when COMMANDS[:rules] then rules
+    when COMMANDS[:stats] then statistics
+    when COMMANDS[:start] then registration
     end
   end
 
   def registration
-    Representer.what_name_msg
-    @user = User.new(validated_name, select_difficult)
-    @game = Game.new(@user.difficult)
+    @user = User.new
+    @game = Game.new(@user.difficult[:attempts], @user.difficult[:hints])
     go_game
-  end
-
-  def select_difficult
-    Representer.select_difficult_msg
-    case validated_difficult
-    when 'easy' then { hints: 2, attempts: 15, level: 'easy' }
-    when 'medium' then { hints: 1, attempts: 10, level: 'medium' }
-    when 'hell' then { hints: 1, attempts: 5, level: 'hell' }
-    end
   end
 
   def go_game
     Representer.game_info_text(@game.attempts, @game.hints)
-    guess = validated_guess
-    guess == 'hint' ? show_hint : user_numbers = guess.chars.map(&:to_i)
+    guess = user_input until valid_guess?(guess)
+    show_hint if guess == HINT
+    user_numbers = guess.chars.map(&:to_i)
     check_result(@game.start(user_numbers))
   end
 
   def check_result(result)
-    lose if result == :lose
-    win if result == :win
+    lose if result == Game::LOSE
+    win if result == Game::WIN
     Representer.show_result_msg(result)
     go_game
   end
@@ -62,7 +59,7 @@ class Console
 
   def win
     Representer.win_msg
-    save_result if gets.chomp.casecmp('yes').zero?
+    save_result if user_input == YES
     what_next
   end
 
@@ -79,5 +76,10 @@ class Console
     db = sort_db
     db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
     what_next
+  end
+
+  def user_input
+    input = gets.chomp.downcase
+    input == EXIT ? Representer.goodbye : input
   end
 end
