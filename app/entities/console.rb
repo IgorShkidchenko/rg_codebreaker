@@ -53,9 +53,9 @@ class Console
 
   def go_game
     Representer.game_info_text(@game.attempts, @game.hints)
-    guess = user_input until Guess.new(guess).validate
-    show_hint if guess == Guess::HINT
-    user_numbers = guess.chars.map(&:to_i)
+    guess = Guess.new(user_input) until guess&.validate
+    show_hint if guess.input == Guess::HINT
+    user_numbers = guess.input.chars.map(&:to_i)
     check_result(@game.start(user_numbers))
   end
 
