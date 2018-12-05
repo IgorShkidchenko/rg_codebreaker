@@ -17,7 +17,7 @@ en:
     win: "You win\n-Enter yes if you want to save your progress"
     lose: 'Game over, you lose if you want you can start a new game'
     empty_db: 'You are the first one'
-    select_difficult: 'Select difficulty: easy, medium, hell'
+    select_difficult: 'Select difficulty: %{difficults}'
     stats_user_info: "%{position}) Name: %{name} Difficult: %{level}\n"
     stats_lefts: "Attempts: %{all_attempts}/%{attempts} Hints: %{all_hints}/%{hints}"
     rules: "Game Rules\n

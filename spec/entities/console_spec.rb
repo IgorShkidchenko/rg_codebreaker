@@ -45,6 +45,14 @@ RSpec.describe Console do
     end
   end
 
+  context '#check_select_name' do
+    it do
+      allow(subject).to receive(:user_input).and_return('', 'Nick')
+      expect(subject).to receive(:user_input).twice
+      subject.select_name
+    end
+  end
+
   context '#check_difficult' do
     it do
       allow(subject).to receive(:gets).and_return('easy')
@@ -67,6 +75,15 @@ RSpec.describe Console do
       allow(subject).to receive(:go_game)
       expect(subject).to receive(:lose)
       subject.check_result(:lose)
+    end
+  end
+
+  context '#check_show_hint' do
+    it do
+      subject.instance_variable_set(:@game, Game.new(1, 0))
+      allow(subject).to receive(:go_game)
+      expect(Representer).to receive(:zero_hints_msg)
+      subject.show_hint
     end
   end
 

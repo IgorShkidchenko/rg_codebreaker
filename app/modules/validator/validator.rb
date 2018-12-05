@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Validator
-
   def valid_choice(choice)
     return false unless check_class?(choice, String)
 
