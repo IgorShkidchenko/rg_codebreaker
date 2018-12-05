@@ -10,7 +10,7 @@ class Game
   GUESSED_THE_PRESENCE = '-'
 
   def initialize(attempts, hints)
-    @breaker_numbers = Array.new(4) { rand(1..6) }
+    @breaker_numbers = generate_random_code
     @breaker_numbers_copy = @breaker_numbers.clone
     @hints = hints
     @attempts = attempts
@@ -48,5 +48,9 @@ class Game
 
   def presence_in_code?(checked_numbers, user_num)
     @breaker_numbers.include?(user_num) && !checked_numbers.include?(user_num)
+  end
+
+  def generate_random_code
+    Array.new(4) { rand(1..6) }
   end
 end

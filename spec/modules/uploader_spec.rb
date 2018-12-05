@@ -5,15 +5,15 @@ RSpec.describe Console do
   let(:result) { double('ResultStatistics') }
   before { stub_const('Uploader::PATH', path) }
 
-  context '.load_db' do
+  context '#load_db' do
     it { expect(subject.load_db.first.name).to eq('Player5') }
   end
 
-  context '.sort_db' do
+  context '#sort_db' do
     it { expect(subject.sort_db.first.name).to eq('Player1') }
   end
 
-  context '.save_to_db' do
+  context '#save_to_db' do
     it do
       db = subject.load_db
       expect { subject.save_to_db(result) }.to change { subject.load_db.count }.by(1)

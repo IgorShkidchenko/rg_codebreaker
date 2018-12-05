@@ -4,11 +4,11 @@ RSpec.describe Game do
   let(:game) { Game.new(15, 2) }
 
   before do
-    stub_const('Game::WIN', :win)
-    stub_const('Game::LOSE', :lose)
-    stub_const('Game::GUESSED_THE_PLACE', '+')
-    stub_const('Game::GUESSED_THE_PRESENCE', '-')
-    stub_const('Game::ALL_GUESSED', ['+', '+', '+', '+'])
+    stub_const('WIN', :win)
+    stub_const('LOSE', :lose)
+    stub_const('GUESSED_THE_PLACE', '+')
+    stub_const('GUESSED_THE_PRESENCE', '-')
+    stub_const('ALL_GUESSED', ['+', '+', '+', '+'])
   end
 
   context '.check_creation' do
@@ -41,55 +41,59 @@ RSpec.describe Game do
     end
   end
 
-  context '#check_start_with_[6, 5, 4, 3]' do
+  describe '#check_start_with_[6, 5, 4, 3]' do
     before { game.instance_variable_set(:@breaker_numbers, [6, 5, 4, 3]) }
 
-    it do
-      guess = [5, 6, 4, 3]
-      result = game.start(guess)
-      expect(result).to eq ['+', '+', '-', '-']
+    context 'with_pluses' do
+      it do
+        guess = [5, 6, 4, 3]
+        result = game.start(guess)
+        expect(result).to eq ['+', '+', '-', '-']
+      end
+
+      it do
+        guess = [6, 4, 1, 1]
+        result = game.start(guess)
+        expect(result).to eq ['+', '-']
+      end
+
+      it do
+        guess = [6, 5, 4, 4]
+        result = game.start(guess)
+        expect(result).to eq ['+', '+', '+']
+      end
+
+      it do
+        guess = [6, 6, 6, 6]
+        result = game.start(guess)
+        expect(result).to eq ['+']
+      end
     end
 
-    it do
-      guess = [6, 4, 1, 1]
-      result = game.start(guess)
-      expect(result).to eq ['+', '-']
-    end
+    context 'with_minuses' do
+      it do
+        guess = [3, 4, 5, 6]
+        result = game.start(guess)
+        expect(result).to eq ['-', '-', '-', '-']
+      end
 
-    it do
-      guess = [6, 5, 4, 4]
-      result = game.start(guess)
-      expect(result).to eq ['+', '+', '+']
-    end
+      it do
+        guess = [3, 4, 5, 6]
+        result = game.start(guess)
+        expect(result).to eq ['-', '-', '-', '-']
+      end
 
-    it do
-      guess = [3, 4, 5, 6]
-      result = game.start(guess)
-      expect(result).to eq ['-', '-', '-', '-']
-    end
+      it do
+        guess = [2, 6, 6, 6]
+        result = game.start(guess)
+        expect(result).to eq ['-']
+      end
 
-    it do
-      guess = [6, 6, 6, 6]
-      result = game.start(guess)
-      expect(result).to eq ['+']
-    end
-
-    it do
-      guess = [3, 4, 5, 6]
-      result = game.start(guess)
-      expect(result).to eq ['-', '-', '-', '-']
-    end
-
-    it do
-      guess = [2, 6, 6, 6]
-      result = game.start(guess)
-      expect(result).to eq ['-']
-    end
-
-    it do
-      guess = [2, 2, 2, 2]
-      result = game.start(guess)
-      expect(result).to eq []
+      it do
+        guess = [2, 2, 2, 2]
+        result = game.start(guess)
+        expect(result).to eq []
+      end
     end
   end
 

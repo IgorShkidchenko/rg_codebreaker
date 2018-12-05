@@ -5,10 +5,13 @@ class Console
   include Uploader
   include Validator
 
-  COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
-  HINT = 'hint'
   EXIT = 'exit'
   YES = 'yes'
+  COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
+  LEVELS = { easy: 'easy', medium: 'medium', hell: 'hell' }.freeze
+  DIFFICULTS = { easy: { hints: 2, attempts: 15, level: LEVELS[:easy] },
+                 medium: { hints: 1, attempts: 10, level: LEVELS[:medium] },
+                 hell: { hints: 1, attempts: 5, level: LEVELS[:hell] } }.freeze
 
   def initialize
     @user = nil
@@ -18,7 +21,7 @@ class Console
 
   def what_next
     Representer.what_next_text
-    choice = user_input until valid_choice?(choice)
+    choice = user_input until valid_choice(choice)
     case choice
     when COMMANDS[:rules] then rules
     when COMMANDS[:stats] then statistics
@@ -27,15 +30,31 @@ class Console
   end
 
   def registration
-    @user = User.new
+    @user = User.new(select_name, select_difficult)
     @game = Game.new(@user.difficult[:attempts], @user.difficult[:hints])
     go_game
   end
 
+  def select_name
+    Representer.what_name_msg
+    name = user_input until valid_name(name)
+    name
+  end
+
+  def select_difficult
+    Representer.select_difficult_msg
+    difficult = user_input until valid_difficult(difficult)
+    case difficult
+    when LEVELS[:easy] then DIFFICULTS[:easy]
+    when LEVELS[:medium] then DIFFICULTS[:medium]
+    when LEVELS[:hell] then DIFFICULTS[:hell]
+    end
+  end
+
   def go_game
     Representer.game_info_text(@game.attempts, @game.hints)
-    guess = user_input until valid_guess?(guess)
-    show_hint if guess == HINT
+    guess = user_input until Guess.new(guess).validate
+    show_hint if guess == Guess::HINT
     user_numbers = guess.chars.map(&:to_i)
     check_result(@game.start(user_numbers))
   end
