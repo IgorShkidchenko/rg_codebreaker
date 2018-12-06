@@ -14,7 +14,8 @@ class Representer
     end
 
     def what_next_text
-      puts I18n.t('console.choose_the_command')
+      puts I18n.t('console.choose_the_command', stats: Console::COMMANDS[:stats], rules: Console::COMMANDS[:rules],
+                                                start: Console::COMMANDS[:start], exit: Console::COMMANDS[:exit])
     end
 
     def what_name_msg
@@ -44,7 +45,7 @@ class Representer
     end
 
     def win_msg
-      puts I18n.t('console.win')
+      puts I18n.t('console.win', yes: Console::YES)
     end
 
     def lose_msg

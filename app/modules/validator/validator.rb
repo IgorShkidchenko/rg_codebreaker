@@ -4,19 +4,27 @@ module Validator
   def valid_choice(choice)
     return false unless check_class?(choice, String)
 
-    Console::COMMANDS.value?(choice) ? true : Representer.wrong_choice_msg
+    check_include?(choice, Console::COMMANDS.values) ? true : Representer.wrong_level_msg
   end
 
   def valid_name(name)
     return false unless check_class?(name, String)
 
-    (3..20).cover?(name.size) ? true : Representer.wrong_name_msg
+    check_cover?(name, Console::VALID_NAME_SIZE) ? true : Representer.wrong_name_msg
   end
 
   def valid_difficult(difficult)
     return false unless check_class?(difficult, String)
 
-    Console::LEVELS.value?(difficult) ? true : Representer.wrong_level_msg
+    check_include?(difficult, Console::LEVELS.values) ? true : Representer.wrong_level_msg
+  end
+
+  def check_cover?(input, valid_numbers)
+    valid_numbers.cover?(input.size)
+  end
+
+  def check_include?(input, checkable_array)
+    checkable_array.include?(input)
   end
 
   def check_match?(input, twin)

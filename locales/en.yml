@@ -3,10 +3,10 @@ en:
   console:
     greeting: "Hello, lets play the 'Codebreaker' game"
     choose_the_command: "Choose the command\n
-      -Enter rules if you want to see rules of the game\n
-      -Enter stats if you want to see the statistics of users results\n
-      -Enter start if you want to start the game\n
-      -Enter exit if you want to quite the game\n"
+      -Enter %{rules} if you want to see rules of the game\n
+      -Enter %{stats} if you want to see the statistics of users results\n
+      -Enter %{start} if you want to start the game\n
+      -Enter %{exit} if you want to quite the game\n"
     what_name: 'What is your name?'
     showed_hint: 'Code contains this number: %{showed}'
     zero_hints: "You don't have any hints"
@@ -14,7 +14,7 @@ en:
     make_guess: "Make your guess\nYou need to enter four numbers between 1 and 6 "
     enter_hint: "Or enter 'hint' to open one digit from code"
     left_attempts_and_hints: "You have %{attempts} attempts and %{hints} hints"
-    win: "You win\n-Enter yes if you want to save your progress"
+    win: "You win\n-Enter %{yes} if you want to save your progress"
     lose: 'Game over, you lose if you want you can start a new game'
     empty_db: 'You are the first one'
     select_difficult: 'Select difficulty: %{difficults}'

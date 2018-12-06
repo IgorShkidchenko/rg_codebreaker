@@ -7,6 +7,7 @@ class Console
 
   EXIT = 'exit'
   YES = 'yes'
+  VALID_NAME_SIZE = (3..20).freeze
   COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
   LEVELS = { easy: 'easy', medium: 'medium', hell: 'hell' }.freeze
   DIFFICULTS = { easy: { hints: 2, attempts: 15, level: LEVELS[:easy] },
