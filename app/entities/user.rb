@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
 class User
-  attr_reader :name, :difficult
+  attr_reader :name
   include Validator
 
-  def initialize(name, difficult)
+  VALID_NAME_SIZE = (3..20).freeze
+
+  def initialize(name)
     @name = name
-    @difficult = difficult
+  end
+
+  def validate_name
+    check_cover?(@name, VALID_NAME_SIZE) ? true : Representer.wrong_name_msg
   end
 end

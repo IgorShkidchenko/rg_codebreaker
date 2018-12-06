@@ -1,28 +1,29 @@
 # frozen_string_literal: true
 
 class Console
-  attr_reader :user, :game
+  attr_reader :user, :difficult, :game
   include Uploader
   include Validator
 
   EXIT = 'exit'
   YES = 'yes'
-  VALID_NAME_SIZE = (3..20).freeze
   COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
-  LEVELS = { easy: 'easy', medium: 'medium', hell: 'hell' }.freeze
-  DIFFICULTS = { easy: { hints: 2, attempts: 15, level: LEVELS[:easy] },
-                 medium: { hints: 1, attempts: 10, level: LEVELS[:medium] },
-                 hell: { hints: 1, attempts: 5, level: LEVELS[:hell] } }.freeze
 
   def initialize
     @user = nil
+    @difficult = nil
     @game = nil
     Representer.greeting_msg
   end
 
   def what_next
     Representer.what_next_text
-    choice = user_input until valid_choice(choice)
+    choice = user_input
+    loop do
+      break if validate_choice(choice)
+
+      choice = user_input
+    end
     case choice
     when COMMANDS[:rules] then rules
     when COMMANDS[:stats] then statistics
@@ -30,31 +31,50 @@ class Console
     end
   end
 
+  def rules
+    Representer.show_rules
+    what_next
+  end
+
+  def statistics
+    db = sort_db
+    db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
+    what_next
+  end
+
   def registration
-    @user = User.new(select_name, select_difficult)
-    @game = Game.new(@user.difficult[:attempts], @user.difficult[:hints])
+    choose_name
+    choose_difficult
+    @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
     go_game
   end
 
-  def select_name
+  def choose_name
     Representer.what_name_msg
-    name = user_input until valid_name(name)
-    name
+    loop do
+      @user = User.new(user_input)
+      break if @user.validate_name
+    end
   end
 
-  def select_difficult
+  def choose_difficult
     Representer.select_difficult_msg
-    difficult = user_input until valid_difficult(difficult)
-    case difficult
-    when LEVELS[:easy] then DIFFICULTS[:easy]
-    when LEVELS[:medium] then DIFFICULTS[:medium]
-    when LEVELS[:hell] then DIFFICULTS[:hell]
+    loop do
+      @difficult = Difficult.new(user_input)
+      break if @difficult.validate_level
     end
+
+    @difficult.select_difficult
   end
 
   def go_game
     Representer.game_info_text(@game.attempts, @game.hints)
-    guess = Guess.new(user_input) until guess&.validate
+    guess = Guess.new(user_input)
+    loop do
+      break if guess.validate_guess
+
+      guess = Guess.new(user_input)
+    end
     show_hint if guess.input == Guess::HINT
     user_numbers = guess.input.chars.map(&:to_i)
     check_result(@game.start(user_numbers))
@@ -84,22 +104,15 @@ class Console
   end
 
   def save_result
-    save_to_db(StatisticsResult.new(@user, @game.attempts, @game.hints))
-  end
-
-  def rules
-    Representer.show_rules
-    what_next
-  end
-
-  def statistics
-    db = sort_db
-    db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
-    what_next
+    save_to_db(StatisticsResult.new(name: @user.name, difficult: @difficult.level, game: @game))
   end
 
   def user_input
     input = gets.chomp.downcase
     input == EXIT ? Representer.goodbye : input
+  end
+
+  def validate_choice(choice)
+    check_include?(choice, COMMANDS.values) ? true : Representer.wrong_choice_msg
   end
 end

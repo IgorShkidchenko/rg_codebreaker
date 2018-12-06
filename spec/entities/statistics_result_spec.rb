@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe StatisticsResult do
-  let(:user) { double('User', name: 'John', difficult: { attempts: 15, hints: 2, level: 'easy' }) }
+  let(:user_name) { 'John' }
+  let(:difficult) { { attempts: 15, hints: 2, level: 'easy' } }
   let(:game) { double('Game', attempts: 10, hints: 1) }
-  let(:statistic) { StatisticsResult.new(user, game.attempts, game.hints) }
+  let(:statistic) { StatisticsResult.new(name: user_name, difficult: difficult, game: game) }
 
-  context '.check_creation' do
+  describe '.new' do
     it { expect(statistic.name).to eq('John') }
     it { expect(statistic.left_attempts).to eq(10) }
     it { expect(statistic.left_hints).to eq(1) }

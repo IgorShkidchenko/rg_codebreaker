@@ -12,8 +12,7 @@ class Guess
     @input = input
   end
 
-  def validate
-    return false unless check_class?(@input, String)
+  def validate_guess
     return true if check_match?(@input, HINT)
 
     check_size?(@input, VALID_SIZE) && check_numbers?(@input, VALID_NUMBERS) ? true : Representer.wrong_guess_msg

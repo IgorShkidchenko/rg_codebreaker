@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 class StatisticsResult
-  attr_reader :left_hints, :left_attempts, :level, :name, :all_attempts, :all_hints
+  attr_reader :left_hints, :left_attempts, :all_attempts, :all_hints, :level, :name
 
-  def initialize(user, left_attempts, left_hints)
-    @name = user.name
-    @left_hints = left_hints
-    @left_attempts = left_attempts
-    @level = user.difficult[:level]
-    @all_attempts = user.difficult[:attempts]
-    @all_hints = user.difficult[:hints]
+  def initialize(name:, difficult:, game:)
+    @name = name
+    @level = difficult[:level]
+    @all_attempts = difficult[:attempts]
+    @all_hints = difficult[:hints]
+    @left_attempts = game.attempts
+    @left_hints = game.hints
   end
 end

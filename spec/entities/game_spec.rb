@@ -11,21 +11,21 @@ RSpec.describe Game do
     stub_const('ALL_GUESSED', ['+', '+', '+', '+'])
   end
 
-  context '.check_creation' do
+  describe '.new' do
     it { expect(game.attempts).to eq(15) }
     it { expect(game.hints).to eq(2) }
   end
 
-  context '#check_hint' do
+  describe '#check_hint' do
     it { expect(game.breaker_numbers).to include(game.hint) }
     it { expect { game.hint }.to change { game.hints }.by(-1) }
   end
 
-  context 'check_attempts_decrease' do
+  describe 'check_attempts_decrease' do
     it { expect { game.start([1, 1, 1, 1]) }.to change { game.attempts }.by(-1) }
   end
 
-  context '#check_start_with_[1, 2, 3, 4]' do
+  describe '#check_start_with_[1, 2, 3, 4]' do
     before { game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     it do
@@ -97,7 +97,7 @@ RSpec.describe Game do
     end
   end
 
-  context '#check_start_with_[6, 6, 6, 6]' do
+  describe '#check_start_with_[6, 6, 6, 6]' do
     it do
       game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
       guess = [1, 6, 6, 1]
@@ -106,7 +106,7 @@ RSpec.describe Game do
     end
   end
 
-  context 'check_win' do
+  describe 'check_win' do
     it do
       game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4])
       guess = [1, 2, 3, 4]
@@ -115,7 +115,7 @@ RSpec.describe Game do
     end
   end
 
-  context 'check_lose' do
+  describe 'check_lose' do
     it do
       game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
       game.instance_variable_set(:@attempts, 1)

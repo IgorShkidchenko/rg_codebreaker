@@ -23,7 +23,7 @@ class Representer
     end
 
     def select_difficult_msg
-      puts I18n.t('console.select_difficult', difficults: Console::LEVELS.values.join(', '))
+      puts I18n.t('console.select_difficult', difficults: Difficult::LEVELS.values.join(', '))
     end
 
     def showed_hint_msg(showed)

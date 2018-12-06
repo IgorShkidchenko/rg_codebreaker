@@ -1,12 +1,22 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
-  let(:difficult) { { attempts: 15, hints: 2, level: 'easy' } }
-  let(:name) { 'John' }
-  let(:user) { User.new(name, difficult) }
+  let(:user) { User.new('John') }
 
-  context '.check_creation' do
-    it { expect(user.name).to eq(name) }
-    it { expect(user.difficult).to eq(difficult) }
+  describe '.new' do
+    it { expect(user.name).to eq('John') }
+  end
+
+  describe '#valid_name' do
+    context 'valid' do
+      it { expect(user.validate_name).to eq(true) }
+    end
+
+    context 'invalid' do
+      it do
+        user.instance_variable_set(:@name, '')
+        expect(user.validate_name).to eq(nil)
+      end
+    end
   end
 end
