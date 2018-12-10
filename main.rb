@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# require 'pry'
 require_relative 'autoload'
 
-Console.new.main_menu
-# binding.pry
+new_game = Console.new
+new_game.greeting
+new_game.main_menu

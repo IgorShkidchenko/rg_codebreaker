@@ -11,7 +11,7 @@ class Console
                stats: 'stats',
                exit: 'exit' }.freeze
 
-  def initialize
+  def greeting
     Representer.greeting_msg
   end
 

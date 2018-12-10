@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Console do
-  let(:path) { './data_base/test_database.yaml' }
+  let(:path) { './spec/fixtures/test_database.yaml' }
   let(:result) { double('ResultStatistics') }
   before { stub_const('Uploader::PATH', path) }
 

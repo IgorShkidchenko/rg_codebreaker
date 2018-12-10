@@ -7,8 +7,11 @@ RSpec.describe Console do
   let(:game) { double('Game', attempts: 10, hints: 1) }
   let(:long_name) { 'aaaaaaaaaaaaaaaaaaaaa' }
 
-  describe '.new' do
-    it { expect { subject }.to output(/Hello/).to_stdout }
+  describe 'greating' do
+    it do
+      expect(Representer).to receive(:greeting_msg)
+      subject.greeting
+    end
   end
 
   describe 'navigate' do

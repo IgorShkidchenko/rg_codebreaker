@@ -3,19 +3,19 @@
 module Errors
   class CoverError < StandardError
     def initialize
-      super('Improper size')
+      super(I18n.t('exceptions.covererror'))
     end
   end
 
   class IncludeError < StandardError
     def initialize
-      super('Not include in propose inputs')
+      super(I18n.t('exceptions.includeerror'))
     end
   end
 
   class SizeError < StandardError
     def initialize
-      super('Invalid size')
+      super(I18n.t('exceptions.sizeerror'))
     end
   end
 end
