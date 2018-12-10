@@ -1,21 +1,36 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
-  let(:user) { User.new('John') }
+  let(:subject) { described_class.new('John') }
 
   describe '.new' do
-    it { expect(user.name).to eq('John') }
+    it { expect(subject.name).to eq('John') }
   end
 
-  describe '#valid' do
+  describe '#validate_and_valid?' do
     context 'valid' do
-      it { expect(user.validate).to eq(nil) }
+      it do
+        expect do
+          subject.validate
+          expect(subject.errors).to eq([])
+        end.to change { subject.errors.size }.by(0)
+      end
+
+      it { expect(subject.valid?).to eq(true) }
     end
 
     context 'invalid' do
       it do
-        user.instance_variable_set(:@name, '')
-        expect { user.validate }.to raise_error(Errors::CoverError)
+        subject.instance_variable_set(:@name, '')
+        expect do
+          subject.validate
+          expect(subject.errors).to eq(['Improper size'])
+        end.to change { subject.errors.size }.by(1)
+      end
+
+      it do
+        subject.instance_variable_set(:@errors, [''])
+        expect(subject.valid?).to eq(false)
       end
     end
   end

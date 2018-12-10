@@ -1,21 +1,25 @@
 # frozen_string_literal: true
 
 class Guess < ValidatableEntity
-  attr_reader :input
+  attr_reader :input, :errors
 
   VALID_NUMBERS = Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s)
-  EXCEPTIONS = [SizeError, IncludeError].freeze
   HINT = 'hint'
 
   def initialize(input)
     @input = input
+    @errors = []
   end
 
   def validate
     return if input_hint?
 
-    check_numbers?(@input, VALID_NUMBERS)
-    check_size?(@input, Game::CODE_SIZE)
+    @errors << I18n.t('exceptions.include_error') unless check_numbers?(@input, VALID_NUMBERS)
+    @errors << I18n.t('exceptions.size_error') unless check_size?(@input, Game::CODE_SIZE)
+  end
+
+  def valid?
+    @errors.empty?
   end
 
   def make_array_of_numbers

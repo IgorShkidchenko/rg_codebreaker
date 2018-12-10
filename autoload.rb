@@ -2,10 +2,10 @@
 
 require 'i18n'
 require 'yaml'
-require_relative './app/modules/errors/errors'
 require_relative './app/modules/uploader/uploader'
 require_relative './app/modules/validator/validator'
 require_relative './app/entities/validatable_entity'
+require_relative './app/entities/navigator'
 require_relative './app/entities/representer'
 require_relative './app/entities/game'
 require_relative './app/entities/console'

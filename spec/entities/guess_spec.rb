@@ -1,39 +1,39 @@
 # frozen_string_literal: true
 
 RSpec.describe Guess do
-  let(:guess) { Guess.new('1111') }
+  let(:subject) { described_class.new('1111') }
 
   describe '.new' do
-    it { expect(guess.input).to eq('1111') }
+    it { expect(subject.input).to eq('1111') }
+  end
+
+  describe '#make_array_of_numbers' do
+    it { expect(subject.make_array_of_numbers).to eq([1, 1, 1, 1]) }
   end
 
   describe '#validate' do
     context 'valid' do
-      it { expect(guess.validate).to eq(nil) }
+      it { expect(subject.validate).to eq(nil) }
 
       it do
-        guess.instance_variable_set(:@input, Guess::HINT)
-        expect(guess.validate).to eq(nil)
+        subject.instance_variable_set(:@input, Guess::HINT)
+        expect do
+          subject.validate
+          expect(subject.errors).to eq([])
+        end.to change { subject.errors.size }.by(0)
       end
+
+      it { expect(subject.valid?).to eq(true) }
     end
 
     context 'invalid' do
       it do
-        guess.instance_variable_set(:@input, '')
-        expect { guess.validate }.to raise_error(Errors::SizeError)
+        subject.instance_variable_set(:@input, '777')
+        expect do
+          subject.validate
+          expect(subject.errors).to eq(['Not include in propose inputs', 'Invalid size'])
+        end.to change { subject.errors.size }.by(2)
       end
-
-      it do
-        guess.instance_variable_set(:@input, '7777')
-        expect { guess.validate }.to raise_error(Errors::IncludeError)
-      end
-    end
-  end
-
-  describe '#make_array_of_numbers' do
-    it do
-      guess.instance_variable_set(:@input, '7777')
-      expect(guess.make_array_of_numbers).to eq([7, 7, 7, 7])
     end
   end
 end

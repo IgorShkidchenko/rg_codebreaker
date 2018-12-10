@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.describe Difficult do
-  let(:subject) { described_class.new('easy') }
+RSpec.describe Navigator do
+  let(:subject) { described_class.new('start') }
+
+  describe '.new' do
+    it { expect(subject.input).to eq('start') }
+  end
 
   describe '#validate_and_valid?' do
     context 'valid' do
@@ -27,31 +31,6 @@ RSpec.describe Difficult do
       it do
         subject.instance_variable_set(:@errors, [''])
         expect(subject.valid?).to eq(false)
-      end
-    end
-  end
-
-  describe '#select_difficult' do
-    context 'level_easy' do
-      it do
-        subject.select_difficult
-        expect(subject.level).to eq(Difficult::DIFFICULTS[:easy])
-      end
-    end
-
-    context 'level_medium' do
-      it do
-        subject.instance_variable_set(:@input, 'medium')
-        subject.select_difficult
-        expect(subject.level).to eq(Difficult::DIFFICULTS[:medium])
-      end
-    end
-
-    context 'level_hell' do
-      it do
-        subject.instance_variable_set(:@input, 'hell')
-        subject.select_difficult
-        expect(subject.level).to eq(Difficult::DIFFICULTS[:hell])
       end
     end
   end

@@ -50,51 +50,40 @@ RSpec.describe Console do
       end
     end
 
-    describe 'make_guess_redirect_to_check_result' do
+    context 'redirect_to_make_guess' do
       it do
-        allow(subject).to receive(:user_input).and_return('start', 'Nick', 'easy', '1111')
-        expect(subject).to receive(:check_result)
-      end
-    end
-
-    describe 'make_guess_redirect_to_show_hint' do
-      it do
-        allow(subject).to receive(:user_input).and_return('start', 'Nick', 'easy', 'hint')
-        expect(subject).to receive(:show_hint)
+        allow(subject).to receive(:user_input).and_return('start', 'Nick', 'easy')
+        expect(subject).to receive(:make_guess)
       end
     end
   end
 
-  describe 'check_loops' do
+  describe 'validate_input_for' do
     before { expect(subject).to receive(:user_input).exactly(3).times }
 
     context 'guess_loop' do
       it do
-        subject.instance_variable_set(:@game, game)
-        allow(subject).to receive(:check_result)
-        allow(game).to receive(:start)
         allow(subject).to receive(:user_input).and_return('qqqq', '111', '1111')
-        subject.send(:make_guess)
+        subject.send(:validate_input_for, Guess)
       end
     end
 
     context 'name_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('', long_name, 'Sam')
-        subject.send(:choose_name)
+        subject.send(:validate_input_for, User)
       end
     end
 
     context 'difficult_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('', 'eeee', 'easy')
-        subject.send(:choose_difficult)
+        subject.send(:validate_input_for, Difficult)
       end
     end
   end
 
   describe 'show_hint' do
-    before { allow(subject).to receive(:make_guess) }
     after { subject.send(:show_hint) }
 
     context 'with_zero_hints' do
@@ -112,30 +101,13 @@ RSpec.describe Console do
     end
   end
 
-  describe 'check_result' do
-    context 'redirect_to_lose_if_zero_attempts' do
-      it do
-        subject.instance_variable_set(:@game, Game.new(0, 2))
-        expect(subject).to receive(:lose)
-        subject.send(:check_result, '1')
-      end
-    end
-
-    before { subject.instance_variable_set(:@game, Game.new(1, 1)) }
-
-    context 'show_result_if_pass_win_and_lose_checks' do
-      it do
-        allow(subject).to receive(:make_guess)
-        expect(Representer).to receive(:show_result_msg)
-        subject.send(:check_result, '')
-      end
-    end
-
-    context 'redirect_to_win_if_all_guessed' do
-      it do
-        expect(subject).to receive(:win)
-        subject.send(:check_result, Game::ALL_GUESSED)
-      end
+  describe 'show_result_if_pass_win_and_lose_checks' do
+    it do
+      subject.instance_variable_set(:@game, Game.new(0, 0))
+      subject.instance_variable_set(:@guess, Guess.new('1111'))
+      allow(game).to receive(:start)
+      expect(Representer).to receive(:game_info_text)
+      subject.send(:check_result)
     end
   end
 

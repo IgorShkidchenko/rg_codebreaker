@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Console < ValidatableEntity
-  attr_reader :user, :difficult, :game
   include Uploader
 
   ACCEPT_SAVING_RESULT = 'yes'
@@ -17,7 +16,7 @@ class Console < ValidatableEntity
   def main_menu
     loop do
       Representer.what_next_text
-      case choose_step
+      case validate_input_for(Navigator).input
       when COMMANDS[:start] then return registration
       when COMMANDS[:rules] then Representer.show_rules
       when COMMANDS[:stats] then statistics
@@ -27,17 +26,6 @@ class Console < ValidatableEntity
 
   private
 
-  def choose_step
-    begin
-      choice = user_input
-      check_include?(choice, COMMANDS.values)
-    rescue IncludeError => error
-      Representer.error_msg(error.message)
-      retry
-    end
-    choice
-  end
-
   def statistics
     db = sort_db
     db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
@@ -45,53 +33,32 @@ class Console < ValidatableEntity
 
   def registration
     Representer.what_name_msg
-    choose_name
+    @user = validate_input_for(User)
     Representer.select_difficult_msg
-    choose_difficult
+    @difficult = validate_input_for(Difficult)
+    @difficult.select_difficult
     @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
     make_guess
   end
 
-  def choose_name
-    @user = User.new(user_input)
-    @user.validate
-  rescue CoverError => error
-    Representer.error_msg(error.message)
-    retry
-  end
-
-  def choose_difficult
-    @difficult = Difficult.new(user_input)
-    @difficult.validate
-  rescue IncludeError => error
-    Representer.error_msg(error.message)
-    retry
-  end
-
   def make_guess
-    Representer.make_guess_msg
-    begin
-      guess = Guess.new(user_input)
-      guess.validate
-    rescue *Guess::EXCEPTIONS => error
-      Representer.error_msg(error.message)
-      retry
+    loop do
+      Representer.make_guess_msg
+      @guess = validate_input_for(Guess)
+      @guess.input == Guess::HINT ? show_hint : check_result
     end
-    guess.input == Guess::HINT ? show_hint : check_result(@game.start(guess.make_array_of_numbers))
   end
 
-  def check_result(result)
+  def check_result
+    result = @game.start(@guess.make_array_of_numbers)
     return win if @game.win?(result)
     return lose if @game.lose?
 
-    Representer.show_result_msg(result)
-    Representer.game_info_text(@game.attempts, @game.hints)
-    make_guess
+    Representer.game_info_text(result, @game.attempts, @game.hints)
   end
 
   def show_hint
     @game.hints.positive? ? Representer.showed_hint_msg(@game.hint) : Representer.zero_hints_msg
-    make_guess
   end
 
   def lose
@@ -107,6 +74,16 @@ class Console < ValidatableEntity
 
   def save_result
     save_to_db(StatisticsResult.new(name: @user.name, difficult: @difficult.level, game: @game))
+  end
+
+  def validate_input_for(klass)
+    loop do
+      input = klass.new(user_input)
+      input.validate
+      break input if input.valid?
+
+      Representer.error_msg(input.errors.join(', '))
+    end
   end
 
   def user_input

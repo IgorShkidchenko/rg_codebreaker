@@ -1,15 +1,20 @@
 # frozen_string_literal: true
 
 class User < ValidatableEntity
-  attr_reader :name
+  attr_reader :name, :errors
 
   VALID_NAME_SIZE = (3..20).freeze
 
   def initialize(name)
     @name = name
+    @errors = []
   end
 
   def validate
-    check_cover?(@name, VALID_NAME_SIZE)
+    @errors << I18n.t('exceptions.cover_error') unless check_cover?(@name, VALID_NAME_SIZE)
+  end
+
+  def valid?
+    @errors.empty?
   end
 end

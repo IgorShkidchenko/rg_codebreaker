@@ -35,11 +35,8 @@ class Representer
       puts I18n.t('console.zero_hints')
     end
 
-    def show_result_msg(result)
+    def game_info_text(result, attempts, hints)
       puts I18n.t('console.result', result: result)
-    end
-
-    def game_info_text(attempts, hints)
       puts I18n.t('console.left_attempts_and_hints', attempts: attempts, hints: hints)
       puts I18n.t('console.make_guess')
       puts I18n.t('console.enter_hint') if hints.positive?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Difficult < ValidatableEntity
-  attr_reader :level
+  attr_reader :level, :errors
 
   LEVELS = { easy: 'easy',
              medium: 'medium',
@@ -13,11 +13,15 @@ class Difficult < ValidatableEntity
 
   def initialize(input)
     @input = input
+    @errors = []
   end
 
   def validate
-    check_include?(@input, LEVELS.values)
-    select_difficult
+    @errors << I18n.t('exceptions.include_error') unless check_include?(@input, LEVELS.values)
+  end
+
+  def valid?
+    @errors.empty?
   end
 
   def select_difficult

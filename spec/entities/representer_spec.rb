@@ -16,8 +16,7 @@ RSpec.describe Representer do
     it { expect { Representer.make_guess_msg }.to output(/Make your guess/).to_stdout }
     it { expect { Representer.showed_hint_msg(one) }.to output(/Code contains this number:/).to_stdout }
     it { expect { Representer.zero_hints_msg }.to output(/You don't have any hints/).to_stdout }
-    it { expect { Representer.show_result_msg(one) }.to output(/Your result is/).to_stdout }
-    it { expect { Representer.game_info_text(one, one) }.to output(/Or enter 'hint' to open one digit /).to_stdout }
+    it { expect { Representer.game_info_text(one, one, one) }.to output(/Your result is 1/).to_stdout }
     it { expect { Representer.win_msg }.to output(/You win/).to_stdout }
     it { expect { Representer.lose_msg }.to output(/Game over/).to_stdout }
     it { expect { Representer.empty_db_msg }.to output(/You are the first one/).to_stdout }
