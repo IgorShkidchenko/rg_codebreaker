@@ -46,7 +46,7 @@ class Representer
     end
 
     def win_msg
-      puts I18n.t('console.win', yes: Console::YES)
+      puts I18n.t('console.win', yes: Console::ACCEPT_SAVING_RESULT)
     end
 
     def lose_msg

@@ -64,7 +64,7 @@ RSpec.describe Game do
     before { game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     context 'win_eq_all_guessed' do
-      it { expect(result).to eq Game::GUESSES[:all_guessed] }
+      it { expect(result).to eq Game::ALL_GUESSED }
     end
 
     context 'win_eq_true' do

@@ -4,7 +4,7 @@ class Guess
   attr_reader :input
   include Validator
 
-  VALID_NUMBERS = %w[1 2 3 4 5 6].freeze
+  VALID_NUMBERS = Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s)
   EXCEPTIONS = [SizeError, IncludeError].freeze
   HINT = 'hint'
 
@@ -12,7 +12,7 @@ class Guess
     @input = input
   end
 
-  def validate_guess
+  def validate
     return if input_hint?
 
     check_numbers?(@input, VALID_NUMBERS)

@@ -10,7 +10,7 @@ class User
     @name = name
   end
 
-  def validate_name
+  def validate
     check_cover?(@name, VALID_NAME_SIZE)
   end
 end

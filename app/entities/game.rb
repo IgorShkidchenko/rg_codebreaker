@@ -3,8 +3,12 @@
 class Game
   attr_reader :hints, :attempts, :breaker_numbers
 
-  GUESSES = { place: '+', presence: '-', all_guessed: ['+', '+', '+', '+'] }.freeze
+  INCLUDE_IN_GAME_NUMBERS = (1..6).freeze
   CODE_SIZE = 4
+
+  GUESS_PLACE = '+'
+  GUESS_PRESENCE = '-'
+  ALL_GUESSED = Array.new(CODE_SIZE) { GUESS_PLACE }
 
   def initialize(attempts, hints)
     @breaker_numbers = generate_random_code
@@ -27,7 +31,7 @@ class Game
   end
 
   def win?(result)
-    GUESSES[:all_guessed] == result
+    ALL_GUESSED == result
   end
 
   def lose?
@@ -38,24 +42,24 @@ class Game
 
   def collect_place_guess
     @game_numbers[:input].map.with_index do |user_num, index|
-      if @game_numbers[:code][index] == user_num
-        @game_numbers[:code][index] = nil
-        @game_numbers[:input][index] = nil
-        GUESSES[:place]
-      end
+      next if @game_numbers[:code][index] != user_num
+
+      @game_numbers[:code][index] = nil
+      @game_numbers[:input][index] = nil
+      GUESS_PLACE
     end.compact
   end
 
   def collect_presence_guess
     @game_numbers[:input].compact.map do |user_num|
-      if @game_numbers[:code].include?(user_num)
-        @game_numbers[:code].delete_at(@game_numbers[:code].index(user_num))
-        GUESSES[:presence]
-      end
+      next unless @game_numbers[:code].include?(user_num)
+
+      @game_numbers[:code].delete_at(@game_numbers[:code].index(user_num))
+      GUESS_PRESENCE
     end.compact
   end
 
   def generate_random_code
-    Array.new(CODE_SIZE) { rand(1..6) }
+    Array.new(CODE_SIZE) { rand(INCLUDE_IN_GAME_NUMBERS) }
   end
 end

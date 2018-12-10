@@ -7,25 +7,25 @@ RSpec.describe Guess do
     it { expect(guess.input).to eq('1111') }
   end
 
-  describe '#validate_guess' do
+  describe '#validate' do
     context 'valid' do
-      it { expect(guess.validate_guess).to eq(nil) }
+      it { expect(guess.validate).to eq(nil) }
 
       it do
         guess.instance_variable_set(:@input, Guess::HINT)
-        expect(guess.validate_guess).to eq(nil)
+        expect(guess.validate).to eq(nil)
       end
     end
 
     context 'invalid' do
       it do
         guess.instance_variable_set(:@input, '')
-        expect { guess.validate_guess }.to raise_error(Errors::SizeError)
+        expect { guess.validate }.to raise_error(Errors::SizeError)
       end
 
       it do
         guess.instance_variable_set(:@input, '7777')
-        expect { guess.validate_guess }.to raise_error(Errors::IncludeError)
+        expect { guess.validate }.to raise_error(Errors::IncludeError)
       end
     end
   end

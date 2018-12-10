@@ -12,9 +12,9 @@ RSpec.describe Console do
   end
 
   describe 'navigate' do
-    after { subject.what_next }
+    after { subject.main_menu }
 
-    describe '#what_next' do
+    describe '#main_menu' do
       context 'invalid' do
         it do
           allow(subject).to receive(:user_input).and_return('', '', 'start')
@@ -25,14 +25,16 @@ RSpec.describe Console do
 
       context 'show_rules_redirect' do
         it do
-          allow(subject).to receive(:user_input).and_return('rules')
-          expect(subject).to receive(:rules)
+          allow(subject).to receive(:user_input).and_return('rules', 'start')
+          allow(subject).to receive(:registration)
+          expect(Representer).to receive(:show_rules)
         end
       end
 
       context 'statistics_redirect' do
         it do
-          allow(subject).to receive(:user_input).and_return('stats')
+          allow(subject).to receive(:user_input).and_return('stats', 'start')
+          allow(subject).to receive(:registration)
           expect(subject).to receive(:statistics)
         end
       end
@@ -129,7 +131,7 @@ RSpec.describe Console do
     context 'redirect_to_win_if_all_guessed' do
       it do
         expect(subject).to receive(:win)
-        subject.send(:check_result, Game::GUESSES[:all_guessed])
+        subject.send(:check_result, Game::ALL_GUESSED)
       end
     end
   end
@@ -145,7 +147,7 @@ RSpec.describe Console do
   end
 
   describe 'win_and_lose' do
-    before { allow(subject).to receive(:what_next) }
+    before { allow(subject).to receive(:main_menu) }
 
     context 'lose' do
       it do
@@ -159,29 +161,20 @@ RSpec.describe Console do
       after { subject.send(:win) }
 
       it 'with_yes' do
-        allow(subject).to receive(:gets).and_return(Console::YES)
+        allow(subject).to receive(:gets).and_return(Console::ACCEPT_SAVING_RESULT)
         expect(subject).to receive(:save_result)
       end
 
       it 'with_no' do
         allow(subject).to receive(:gets).and_return('')
-        allow(subject).to receive(:save_result)
-        expect(subject).to receive(:what_next)
+        expect(subject).to receive(:main_menu)
       end
-    end
-  end
-
-  describe 'rules' do
-    it do
-      allow(subject).to receive(:what_next)
-      expect(Representer).to receive(:show_rules)
-      subject.send(:rules)
     end
   end
 
   describe 'statistics' do
     it do
-      allow(subject).to receive(:what_next)
+      allow(subject).to receive(:main_menu)
       allow(subject).to receive(:sort_db).and_return([])
       allow(Representer).to receive(:empty_db_msg)
       subject.send(:statistics)

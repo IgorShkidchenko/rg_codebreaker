@@ -4,7 +4,10 @@ class Difficult
   attr_reader :level
   include Validator
 
-  LEVELS = { easy: 'easy', medium: 'medium', hell: 'hell' }.freeze
+  LEVELS = { easy: 'easy',
+             medium: 'medium',
+             hell: 'hell' }.freeze
+
   DIFFICULTS = { easy: { hints: 2, attempts: 15, level: LEVELS[:easy] },
                  medium: { hints: 1, attempts: 10, level: LEVELS[:medium] },
                  hell: { hints: 1, attempts: 5, level: LEVELS[:hell] } }.freeze
@@ -13,7 +16,7 @@ class Difficult
     @input = input
   end
 
-  def validate_level
+  def validate
     check_include?(@input, LEVELS.values)
     select_difficult
   end

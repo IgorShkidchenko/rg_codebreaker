@@ -3,5 +3,5 @@
 # require 'pry'
 require_relative 'autoload'
 
-Console.new.what_next
+Console.new.main_menu
 # binding.pry
