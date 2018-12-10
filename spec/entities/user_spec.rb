@@ -9,13 +9,13 @@ RSpec.describe User do
 
   describe '#valid_name' do
     context 'valid' do
-      it { expect(user.validate_name).to eq(true) }
+      it { expect(user.validate_name).to eq(nil) }
     end
 
     context 'invalid' do
       it do
         user.instance_variable_set(:@name, '')
-        expect(user.validate_name).to eq(nil)
+        expect { user.validate_name }.to raise_error(Errors::CoverError)
       end
     end
   end

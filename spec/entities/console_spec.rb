@@ -3,162 +3,192 @@
 RSpec.describe Console do
   let(:subject) { described_class.new }
   let(:user) { double('User', name: 'John') }
-  let(:difficult) { double('Difficult', input: 'easy', level: { attempts: 15, hints: 2, level: 'easy' }) }
+  let(:difficult) { double('Difficult', input: 'easy', level: Difficult::DIFFICULTS[:easy]) }
   let(:game) { double('Game', attempts: 10, hints: 1) }
   let(:long_name) { 'aaaaaaaaaaaaaaaaaaaaa' }
-  let(:statistic) { double('StatisticsResult', name: user.name, difficult: difficult, game: game) }
 
   describe '.new' do
     it { expect { subject }.to output(/Hello/).to_stdout }
   end
 
-  describe '#what_next' do
-    context 'rules' do
-      it do
-        allow(subject).to receive(:user_input).and_return('rules')
-        expect(subject).to receive(:rules)
-        subject.what_next
+  describe 'navigate' do
+    after { subject.what_next }
+
+    describe '#what_next' do
+      context 'invalid' do
+        it do
+          allow(subject).to receive(:user_input).and_return('', '', 'start')
+          allow(subject).to receive(:registration)
+          expect(Representer).to receive(:error_msg).twice
+        end
+      end
+
+      context 'show_rules_redirect' do
+        it do
+          allow(subject).to receive(:user_input).and_return('rules')
+          expect(subject).to receive(:rules)
+        end
+      end
+
+      context 'statistics_redirect' do
+        it do
+          allow(subject).to receive(:user_input).and_return('stats')
+          expect(subject).to receive(:statistics)
+        end
+      end
+
+      context 'registration_redirect' do
+        it do
+          allow(subject).to receive(:user_input).and_return('start')
+          expect(subject).to receive(:registration)
+        end
       end
     end
 
-    context 'stats' do
+    describe 'make_guess_redirect_to_check_result' do
       it do
-        allow(subject).to receive(:user_input).and_return('stats')
-        expect(subject).to receive(:statistics)
-        subject.what_next
+        allow(subject).to receive(:user_input).and_return('start', 'Nick', 'easy', '1111')
+        expect(subject).to receive(:check_result)
       end
     end
 
-    context 'start' do
+    describe 'make_guess_redirect_to_show_hint' do
       it do
-        allow(subject).to receive(:user_input).and_return('start')
-        expect(subject).to receive(:registration)
-        subject.what_next
-      end
-    end
-
-    context 'check_loop' do
-      it do
-        allow(subject).to receive(:user_input).and_return('', 'start')
-        allow(subject).to receive(:registration)
-        expect(subject).to receive(:user_input).twice
-        subject.what_next
-      end
-    end
-  end
-
-  describe '#registration' do
-    it do
-      subject.instance_variable_set(:@difficult, difficult)
-      allow(subject).to receive(:choose_name)
-      allow(subject).to receive(:choose_difficult)
-      expect(subject).to receive(:go_game)
-      subject.registration
-    end
-  end
-
-  describe '#choose_name' do
-    it do
-      allow(subject).to receive(:user_input).and_return('', long_name, 'Nick')
-      expect(subject).to receive(:user_input).exactly(3).times
-      subject.choose_name
-    end
-  end
-
-  describe '#choose_difficult' do
-    it do
-      allow(subject).to receive(:user_input).and_return('', 'easy')
-      expect(subject).to receive(:user_input).twice
-      subject.choose_difficult
-    end
-  end
-
-  describe '#go_game' do
-    before do
-      subject.instance_variable_set(:@game, game)
-      allow(subject).to receive(:check_result)
-    end
-
-    context 'check_start_navigate' do
-      it do
-        allow(subject).to receive(:user_input).and_return('1111')
-        expect(game).to receive(:start)
-        subject.go_game
-      end
-    end
-
-    before { allow(game).to receive(:start) }
-
-    context 'check_show_hint_navigate' do
-      it do
-        allow(subject).to receive(:user_input).and_return('hint')
-        allow(game).to receive(:start)
+        allow(subject).to receive(:user_input).and_return('start', 'Nick', 'easy', 'hint')
         expect(subject).to receive(:show_hint)
-        subject.go_game
       end
     end
+  end
 
-    context 'check_loop' do
+  describe 'check_loops' do
+    before { expect(subject).to receive(:user_input).exactly(3).times }
+
+    context 'guess_loop' do
       it do
+        subject.instance_variable_set(:@game, game)
+        allow(subject).to receive(:check_result)
+        allow(game).to receive(:start)
         allow(subject).to receive(:user_input).and_return('qqqq', '111', '1111')
-        expect(subject).to receive(:user_input).exactly(3).times
-        subject.go_game
+        subject.send(:make_guess)
+      end
+    end
+
+    context 'name_loop' do
+      it do
+        allow(subject).to receive(:user_input).and_return('', long_name, 'Sam')
+        subject.send(:choose_name)
+      end
+    end
+
+    context 'difficult_loop' do
+      it do
+        allow(subject).to receive(:user_input).and_return('', 'eeee', 'easy')
+        subject.send(:choose_difficult)
       end
     end
   end
 
-  describe '#validate_choice' do
-    context 'valid' do
-      it { expect(subject.validate_choice(Console::COMMANDS[:stats])).to eq(true) }
+  describe 'show_hint' do
+    before { allow(subject).to receive(:make_guess) }
+    after { subject.send(:show_hint) }
+
+    context 'with_zero_hints' do
+      it do
+        subject.instance_variable_set(:@game, Game.new(1, 0))
+        expect(Representer).to receive(:zero_hints_msg)
+      end
     end
 
-    context 'invalid' do
-      it { expect(subject.validate_choice('')).to eq(nil) }
+    context 'with_some_hints' do
+      it do
+        subject.instance_variable_set(:@game, Game.new(1, 1))
+        expect(Representer).to receive(:showed_hint_msg)
+      end
     end
   end
 
-  describe '#save_result' do
+  describe 'check_result' do
+    context 'redirect_to_lose_if_zero_attempts' do
+      it do
+        subject.instance_variable_set(:@game, Game.new(0, 2))
+        expect(subject).to receive(:lose)
+        subject.send(:check_result, '1')
+      end
+    end
+
+    before { subject.instance_variable_set(:@game, Game.new(1, 1)) }
+
+    context 'show_result_if_pass_win_and_lose_checks' do
+      it do
+        allow(subject).to receive(:make_guess)
+        expect(Representer).to receive(:show_result_msg)
+        subject.send(:check_result, '')
+      end
+    end
+
+    context 'redirect_to_win_if_all_guessed' do
+      it do
+        expect(subject).to receive(:win)
+        subject.send(:check_result, Game::GUESSES[:all_guessed])
+      end
+    end
+  end
+
+  describe 'save_result' do
     it do
       subject.instance_variable_set(:@game, game)
       subject.instance_variable_set(:@user, user)
       subject.instance_variable_set(:@difficult, difficult)
-
       expect(subject).to receive(:save_to_db)
-      subject.save_result
+      subject.send(:save_result)
     end
   end
 
-  describe '#check_result' do
-    it do
-      allow(subject).to receive(:go_game)
-      expect(subject).to receive(:lose)
-      subject.check_result(:lose)
+  describe 'win_and_lose' do
+    before { allow(subject).to receive(:what_next) }
+
+    context 'lose' do
+      it do
+        expect(Representer).to receive(:lose_msg)
+        subject.send(:lose)
+      end
+    end
+
+    context 'win' do
+      before { expect(Representer).to receive(:win_msg) }
+      after { subject.send(:win) }
+
+      it 'with_yes' do
+        allow(subject).to receive(:gets).and_return(Console::YES)
+        expect(subject).to receive(:save_result)
+      end
+
+      it 'with_no' do
+        allow(subject).to receive(:gets).and_return('')
+        allow(subject).to receive(:save_result)
+        expect(subject).to receive(:what_next)
+      end
     end
   end
 
-  describe '#check_show_hint' do
+  describe 'rules' do
     it do
-      subject.instance_variable_set(:@game, Game.new(1, 0))
-      allow(subject).to receive(:go_game)
-      expect(Representer).to receive(:zero_hints_msg)
-      subject.show_hint
+      allow(subject).to receive(:what_next)
+      expect(Representer).to receive(:show_rules)
+      subject.send(:rules)
     end
   end
 
-  describe 'check_console_navigation' do
-    before { expect(subject).to receive(:what_next) }
-
-    it { subject.lose }
-    it { subject.rules }
-
+  describe 'statistics' do
     it do
+      allow(subject).to receive(:what_next)
       allow(subject).to receive(:sort_db).and_return([])
-      subject.statistics
+      allow(Representer).to receive(:empty_db_msg)
+      subject.send(:statistics)
     end
+  end
 
-    it do
-      allow(subject).to receive(:gets).and_return('')
-      subject.win
-    end
+  describe 'exit_console' do
+    it { expect { subject.send(:exit_console) }.to raise_error(SystemExit) }
   end
 end

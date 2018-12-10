@@ -5,13 +5,13 @@ RSpec.describe Difficult do
 
   describe '#validate_level' do
     context 'valid' do
-      it { expect(difficult.validate_level).to eq(true) }
+      it { expect(difficult.validate_level).to eq(Difficult::DIFFICULTS[:easy]) }
     end
 
     context 'invalid' do
       it do
         difficult.instance_variable_set(:@input, '')
-        expect(difficult.validate_level).to eq(nil)
+        expect { difficult.validate_level }.to raise_error(Errors::IncludeError)
       end
     end
   end

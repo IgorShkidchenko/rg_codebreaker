@@ -2,6 +2,6 @@
 
 # require 'pry'
 require_relative 'autoload'
-new_game = Console.new
-new_game.what_next
+
+Console.new.what_next
 # binding.pry

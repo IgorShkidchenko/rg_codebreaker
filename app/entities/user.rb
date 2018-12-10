@@ -11,6 +11,6 @@ class User
   end
 
   def validate_name
-    check_cover?(@name, VALID_NAME_SIZE) ? true : Representer.wrong_name_msg
+    check_cover?(@name, VALID_NAME_SIZE)
   end
 end

@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Representer
-  EXIT = -> { exit }
-
   class << self
     def greeting_msg
       puts I18n.t('console.greeting')
@@ -10,7 +8,6 @@ class Representer
 
     def goodbye
       puts I18n.t(:goodbye)
-      EXIT.call
     end
 
     def what_next_text
@@ -24,6 +21,10 @@ class Representer
 
     def select_difficult_msg
       puts I18n.t('console.select_difficult', difficults: Difficult::LEVELS.values.join(', '))
+    end
+
+    def make_guess_msg
+      puts I18n.t('console.make_guess')
     end
 
     def showed_hint_msg(showed)
@@ -57,10 +58,8 @@ class Representer
     end
 
     def show_db(db)
-      position = 0
-      db.each do |user|
-        position += 1
-        puts I18n.t('console.stats_user_info', position: position, name: user.name, level: user.level)
+      db.each_with_index do |user, index|
+        puts I18n.t('console.stats_user_info', position: index + 1, name: user.name, level: user.level)
         puts I18n.t('console.stats_lefts', attempts: user.left_attempts, all_attempts: user.all_attempts,
                                            hints: user.left_hints, all_hints: user.all_hints)
       end
@@ -70,20 +69,8 @@ class Representer
       puts I18n.t('console.rules')
     end
 
-    def wrong_name_msg
-      puts I18n.t('validator.wrong_name')
-    end
-
-    def wrong_guess_msg
-      puts I18n.t('validator.wrong_guess')
-    end
-
-    def wrong_level_msg
-      puts I18n.t('validator.wrong_level')
-    end
-
-    def wrong_choice_msg
-      puts I18n.t('validator.wrong_choice')
+    def error_msg(error)
+      puts I18n.t('error', error: error)
     end
   end
 end

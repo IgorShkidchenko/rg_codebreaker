@@ -2,6 +2,7 @@
 
 RSpec.describe Representer do
   let(:one) { 1 }
+  let(:error) { 'Invalid error' }
   let(:result) do
     double('StatisticsResult', name: 'John', all_attempts: 15,
                                all_hints: 2, level: 'easy', left_attempts: 10, left_hints: 1)
@@ -12,6 +13,7 @@ RSpec.describe Representer do
     it { expect { Representer.what_next_text }.to output(/Choose the command/).to_stdout }
     it { expect { Representer.what_name_msg }.to output(/What is your name/).to_stdout }
     it { expect { Representer.select_difficult_msg }.to output(/Select difficulty: easy, medium, hell/).to_stdout }
+    it { expect { Representer.make_guess_msg }.to output(/Make your guess/).to_stdout }
     it { expect { Representer.showed_hint_msg(one) }.to output(/Code contains this number:/).to_stdout }
     it { expect { Representer.zero_hints_msg }.to output(/You don't have any hints/).to_stdout }
     it { expect { Representer.show_result_msg(one) }.to output(/Your result is/).to_stdout }
@@ -23,12 +25,11 @@ RSpec.describe Representer do
     it { expect { Representer.show_rules }.to output(/Codebreaker is a logic game in which/).to_stdout }
   end
 
-  describe '.validator_msg' do
-    it { expect { Representer.wrong_name_msg }.to output(/Name must be from 3 to 20 characters/).to_stdout }
-    it { expect { Representer.wrong_guess_msg }.to output(/You need to enter 'hint' or four /).to_stdout }
-    it { expect { Representer.wrong_level_msg }.to output(/I dont have such level/).to_stdout }
-    it { expect { Representer.wrong_choice_msg }.to output(/You have passed unexpected command/).to_stdout }
-    before { stub_const('Representer::EXIT', proc {}) }
+  describe '.error_msg' do
+    it { expect { Representer.error_msg(error) }.to output(/Unexpected input, it was '#{error}'/).to_stdout }
+  end
+
+  describe '.goodbye_msg' do
     it { expect { Representer.goodbye }.to output(/Goodbye/).to_stdout }
   end
 end

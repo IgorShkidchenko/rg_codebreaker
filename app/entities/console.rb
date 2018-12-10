@@ -5,30 +5,33 @@ class Console
   include Uploader
   include Validator
 
-  EXIT = 'exit'
+  COMMANDS = { rules: 'rules', start: 'start', stats: 'stats', exit: 'exit' }.freeze
   YES = 'yes'
-  COMMANDS = { rules: 'rules', start: 'start', stats: 'stats' }.freeze
 
   def initialize
-    @user = nil
-    @difficult = nil
-    @game = nil
     Representer.greeting_msg
   end
 
   def what_next
     Representer.what_next_text
-    choice = user_input
-    loop do
-      break if validate_choice(choice)
-
-      choice = user_input
-    end
-    case choice
+    case choose_step
+    when COMMANDS[:start] then registration
     when COMMANDS[:rules] then rules
     when COMMANDS[:stats] then statistics
-    when COMMANDS[:start] then registration
     end
+  end
+
+  private
+
+  def choose_step
+    begin
+      choice = user_input
+      check_include?(choice, COMMANDS.values)
+    rescue IncludeError => error
+      Representer.error_msg(error.message)
+      retry
+    end
+    choice
   end
 
   def rules
@@ -43,53 +46,54 @@ class Console
   end
 
   def registration
+    Representer.what_name_msg
     choose_name
+    Representer.select_difficult_msg
     choose_difficult
     @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
-    go_game
+    make_guess
   end
 
   def choose_name
-    Representer.what_name_msg
-    loop do
-      @user = User.new(user_input)
-      break if @user.validate_name
-    end
+    @user = User.new(user_input)
+    @user.validate_name
+  rescue CoverError => error
+    Representer.error_msg(error.message)
+    retry
   end
 
   def choose_difficult
-    Representer.select_difficult_msg
-    loop do
-      @difficult = Difficult.new(user_input)
-      break if @difficult.validate_level
-    end
-
-    @difficult.select_difficult
+    @difficult = Difficult.new(user_input)
+    @difficult.validate_level
+  rescue IncludeError => error
+    Representer.error_msg(error.message)
+    retry
   end
 
-  def go_game
-    Representer.game_info_text(@game.attempts, @game.hints)
-    guess = Guess.new(user_input)
-    loop do
-      break if guess.validate_guess
-
+  def make_guess
+    Representer.make_guess_msg
+    begin
       guess = Guess.new(user_input)
+      guess.validate_guess
+    rescue *Guess::EXCEPTIONS => error
+      Representer.error_msg(error.message)
+      retry
     end
-    show_hint if guess.input == Guess::HINT
-    user_numbers = guess.input.chars.map(&:to_i)
-    check_result(@game.start(user_numbers))
+    guess.input == Guess::HINT ? show_hint : check_result(@game.start(guess.make_array_of_numbers))
   end
 
   def check_result(result)
-    lose if result == Game::LOSE
-    win if result == Game::WIN
+    return win if @game.win?(result)
+    return lose if @game.lose?
+
     Representer.show_result_msg(result)
-    go_game
+    Representer.game_info_text(@game.attempts, @game.hints)
+    make_guess
   end
 
   def show_hint
-    @game.hints.zero? ? Representer.zero_hints_msg : Representer.showed_hint_msg(@game.hint)
-    go_game
+    @game.hints.positive? ? Representer.showed_hint_msg(@game.hint) : Representer.zero_hints_msg
+    make_guess
   end
 
   def lose
@@ -109,10 +113,11 @@ class Console
 
   def user_input
     input = gets.chomp.downcase
-    input == EXIT ? Representer.goodbye : input
+    input == COMMANDS[:exit] ? exit_console : input
   end
 
-  def validate_choice(choice)
-    check_include?(choice, COMMANDS.values) ? true : Representer.wrong_choice_msg
+  def exit_console
+    Representer.goodbye
+    exit
   end
 end

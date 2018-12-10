@@ -3,54 +3,59 @@
 class Game
   attr_reader :hints, :attempts, :breaker_numbers
 
-  ALL_GUESSED = ['+', '+', '+', '+'].freeze
-  WIN = :win
-  LOSE = :lose
-  GUESSED_THE_PLACE = '+'
-  GUESSED_THE_PRESENCE = '-'
+  GUESSES = { place: '+', presence: '-', all_guessed: ['+', '+', '+', '+'] }.freeze
+  CODE_SIZE = 4
 
   def initialize(attempts, hints)
     @breaker_numbers = generate_random_code
-    @breaker_numbers_copy = @breaker_numbers.clone
+    @breaker_numbers_copy = @breaker_numbers.clone.shuffle
     @hints = hints
     @attempts = attempts
   end
 
   def start(user_input)
     @attempts -= 1
-    return LOSE if @attempts.zero?
-
-    result = check_guess(user_input).compact.sort!
-    result == ALL_GUESSED ? WIN : result
+    @game_numbers = { code: @breaker_numbers.clone, input: user_input }
+    collect_place_guess + collect_presence_guess
   end
 
   def hint
+    return if @hints.zero?
+
     @hints -= 1
-    showed = @breaker_numbers_copy.sample
-    @breaker_numbers_copy.delete_at(@breaker_numbers_copy.index(showed))
-    showed
+    @breaker_numbers_copy.pop
+  end
+
+  def win?(result)
+    GUESSES[:all_guessed] == result
+  end
+
+  def lose?
+    @attempts.zero?
   end
 
   private
 
-  def check_guess(user_input)
-    checked_numbers = []
-    @breaker_numbers.zip(user_input).map do |breaker_num, user_num|
-      if breaker_num == user_num
-        checked_numbers << user_num
-        GUESSED_THE_PLACE
-      elsif presence_in_code?(checked_numbers, user_num)
-        checked_numbers << user_num
-        GUESSED_THE_PRESENCE
+  def collect_place_guess
+    @game_numbers[:input].map.with_index do |user_num, index|
+      if @game_numbers[:code][index] == user_num
+        @game_numbers[:code][index] = nil
+        @game_numbers[:input][index] = nil
+        GUESSES[:place]
       end
-    end
+    end.compact
   end
 
-  def presence_in_code?(checked_numbers, user_num)
-    @breaker_numbers.include?(user_num) && !checked_numbers.include?(user_num)
+  def collect_presence_guess
+    @game_numbers[:input].compact.map do |user_num|
+      if @game_numbers[:code].include?(user_num)
+        @game_numbers[:code].delete_at(@game_numbers[:code].index(user_num))
+        GUESSES[:presence]
+      end
+    end.compact
   end
 
   def generate_random_code
-    Array.new(4) { rand(1..6) }
+    Array.new(CODE_SIZE) { rand(1..6) }
   end
 end

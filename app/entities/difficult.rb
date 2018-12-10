@@ -11,11 +11,11 @@ class Difficult
 
   def initialize(input)
     @input = input
-    @level = nil
   end
 
   def validate_level
-    check_include?(@input, LEVELS.values) ? true : Representer.wrong_level_msg
+    check_include?(@input, LEVELS.values)
+    select_difficult
   end
 
   def select_difficult

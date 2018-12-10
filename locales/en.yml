@@ -7,7 +7,7 @@ en:
       -Enter %{stats} if you want to see the statistics of users results\n
       -Enter %{start} if you want to start the game\n
       -Enter %{exit} if you want to quite the game\n"
-    what_name: 'What is your name?'
+    what_name: "What is your name?\nName must be from 3 to 20 characters"
     showed_hint: 'Code contains this number: %{showed}'
     zero_hints: "You don't have any hints"
     result: 'Your result is %{result}'
@@ -34,8 +34,4 @@ en:
       • An empty space indicates that there is not a current digit in a secret number.\n
       • If codebreaker inputs the exact number as a secret number - codebreaker wins the game. If all attempts are spent - codebreaker loses.\n
       • Codebreaker also has some number of hints(depends on chosen difficulty). If a user takes a hint - he receives back a separate digit of the secret code.\n"
-  validator:
-    wrong_name: 'Name must be from 3 to 20 characters'
-    wrong_guess: "You need to enter 'hint' or four numbers between 1 and 6"
-    wrong_level: 'I dont have such level, try one more time'
-    wrong_choice: 'You have passed unexpected command, try one more time'
+  error: "Unexpected input, it was '%{error}', try one more time"

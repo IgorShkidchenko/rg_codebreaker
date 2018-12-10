@@ -2,6 +2,7 @@
 
 require 'i18n'
 require 'yaml'
+require_relative './app/modules/errors/errors'
 require_relative './app/modules/uploader/uploader'
 require_relative './app/modules/validator/validator'
 require_relative './app/entities/representer'
