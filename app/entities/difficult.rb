@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class Difficult
+class Difficult < ValidatableEntity
   attr_reader :level
-  include Validator
 
   LEVELS = { easy: 'easy',
              medium: 'medium',

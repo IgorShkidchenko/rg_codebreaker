@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class Guess
+class Guess < ValidatableEntity
   attr_reader :input
-  include Validator
 
   VALID_NUMBERS = Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s)
   EXCEPTIONS = [SizeError, IncludeError].freeze

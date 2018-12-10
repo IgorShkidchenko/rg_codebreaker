@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class Console
+class Console < ValidatableEntity
   attr_reader :user, :difficult, :game
   include Uploader
-  include Validator
 
   ACCEPT_SAVING_RESULT = 'yes'
   COMMANDS = { rules: 'rules',

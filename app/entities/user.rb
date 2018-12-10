@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class User
+class User < ValidatableEntity
   attr_reader :name
-  include Validator
 
   VALID_NAME_SIZE = (3..20).freeze
 
