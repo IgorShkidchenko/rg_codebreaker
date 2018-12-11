@@ -14,7 +14,6 @@ module Validator
   end
 
   def check_numbers?(cheackable, valid_numbers)
-    cheackable.chars.each { |guess_char| return false unless check_include?(guess_char, valid_numbers) }
-    true
+    cheackable.each_char.all? { |guess_char| valid_numbers.include?(guess_char) }
   end
 end

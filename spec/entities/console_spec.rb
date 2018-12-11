@@ -78,7 +78,7 @@ RSpec.describe Console do
     context 'difficult_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('', 'eeee', 'easy')
-        subject.send(:validate_input_for, Difficult)
+        subject.send(:choose_difficult)
       end
     end
   end

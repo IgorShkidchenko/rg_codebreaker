@@ -7,8 +7,8 @@ RSpec.describe Guess do
     it { expect(subject.input).to eq('1111') }
   end
 
-  describe '#make_array_of_numbers' do
-    it { expect(subject.make_array_of_numbers).to eq([1, 1, 1, 1]) }
+  describe '#as_array_of_numbers' do
+    it { expect(subject.as_array_of_numbers).to eq([1, 1, 1, 1]) }
   end
 
   describe '#validate' do

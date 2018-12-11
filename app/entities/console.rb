@@ -34,11 +34,19 @@ class Console < ValidatableEntity
   def registration
     Representer.what_name_msg
     @user = validate_input_for(User)
-    Representer.select_difficult_msg
-    @difficult = validate_input_for(Difficult)
-    @difficult.select_difficult
+    choose_difficult
     @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
     make_guess
+  end
+
+  def choose_difficult
+    Representer.select_difficult_msg
+    loop do
+      @difficult = Difficult.find(user_input)
+      break if @difficult
+
+      Representer.error_msg(I18n.t('exceptions.include_error'))
+    end
   end
 
   def make_guess
@@ -50,10 +58,10 @@ class Console < ValidatableEntity
   end
 
   def check_game_result
-    @guess.make_array_of_numbers
-    return win if @game.win?(@guess.input)
+    guess_array = @guess.as_array_of_numbers
+    return win if @game.win?(guess_array)
 
-    game_result = @game.start(@guess.input)
+    game_result = @game.start(guess_array)
     return lose if @game.lose?
 
     Representer.game_info_text(game_result, @game.attempts, @game.hints)

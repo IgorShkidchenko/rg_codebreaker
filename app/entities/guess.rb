@@ -18,8 +18,8 @@ class Guess < ValidatableEntity
     @errors << I18n.t('exceptions.size_error') unless check_size?(@input, Game::CODE_SIZE)
   end
 
-  def make_array_of_numbers
-    @input = @input.chars.map(&:to_i)
+  def as_array_of_numbers
+    @input.chars.map(&:to_i)
   end
 
   def hint?
