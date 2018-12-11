@@ -58,21 +58,21 @@ RSpec.describe Game do
   end
 
   describe '#win?' do
-    let(:result) { subject.start([1, 2, 3, 4]) }
-    let(:minuses) { ['-', '-', '-', '-'] }
+    let(:guess) { [1, 2, 3, 4] }
+    let(:numbers_for_lose) { [1, 1, 1, 1] }
 
     before { subject.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     context 'win_eq_all_guessed' do
-      it { expect(result).to eq Game::ALL_GUESSED }
+      it { expect(guess).to eq subject.breaker_numbers }
     end
 
     context 'win_eq_true' do
-      it { expect(subject.win?(result)).to eq true }
+      it { expect(subject.win?(guess)).to eq true }
     end
 
     context 'win_eq_false' do
-      it { expect(subject.win?(minuses)).to eq false }
+      it { expect(subject.win?(numbers_for_lose)).to eq false }
     end
   end
 

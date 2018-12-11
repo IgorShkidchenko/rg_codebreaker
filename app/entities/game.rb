@@ -8,7 +8,6 @@ class Game
 
   GUESS_PLACE = '+'
   GUESS_PRESENCE = '-'
-  ALL_GUESSED = Array.new(CODE_SIZE) { GUESS_PLACE }
 
   def initialize(attempts, hints)
     @breaker_numbers = generate_random_code
@@ -31,7 +30,7 @@ class Game
   end
 
   def win?(result)
-    ALL_GUESSED == result
+    @breaker_numbers == result
   end
 
   def lose?

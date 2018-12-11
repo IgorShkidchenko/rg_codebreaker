@@ -6,15 +6,11 @@ class User < ValidatableEntity
   VALID_NAME_SIZE = (3..20).freeze
 
   def initialize(name)
+    super()
     @name = name
-    @errors = []
   end
 
   def validate
     @errors << I18n.t('exceptions.cover_error') unless check_cover?(@name, VALID_NAME_SIZE)
-  end
-
-  def valid?
-    @errors.empty?
   end
 end

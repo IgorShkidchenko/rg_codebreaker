@@ -45,16 +45,18 @@ class Console < ValidatableEntity
     loop do
       Representer.make_guess_msg
       @guess = validate_input_for(Guess)
-      @guess.input == Guess::HINT ? show_hint : check_result
+      @guess.hint? ? show_hint : check_game_result
     end
   end
 
-  def check_result
-    result = @game.start(@guess.make_array_of_numbers)
-    return win if @game.win?(result)
+  def check_game_result
+    @guess.make_array_of_numbers
+    return win if @game.win?(@guess.input)
+
+    game_result = @game.start(@guess.input)
     return lose if @game.lose?
 
-    Representer.game_info_text(result, @game.attempts, @game.hints)
+    Representer.game_info_text(game_result, @game.attempts, @game.hints)
   end
 
   def show_hint
