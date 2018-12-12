@@ -65,10 +65,10 @@ class Console < ValidatableEntity
     guess_array = @guess.as_array_of_numbers
     return win if @game.win?(guess_array)
 
-    game_result = @game.start_round(guess_array)
+    round_result = @game.start_round(guess_array)
     return lose if @game.lose?
 
-    Representer.game_info_text(game_result, @game.attempts, @game.hints)
+    Representer.round_info_text(round_result, @game.attempts, @game.hints)
   end
 
   def show_hint

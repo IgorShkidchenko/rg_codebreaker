@@ -35,7 +35,7 @@ class Representer
       puts I18n.t('console.zero_hints')
     end
 
-    def game_info_text(result, attempts, hints)
+    def round_info_text(result, attempts, hints)
       puts I18n.t('console.result', result: result)
       puts I18n.t('console.left_attempts_and_hints', attempts: attempts, hints: hints)
       puts I18n.t('console.make_guess')

@@ -106,7 +106,7 @@ RSpec.describe Console do
       subject.instance_variable_set(:@game, Game.new(0, 0))
       subject.instance_variable_set(:@guess, Guess.new('1111'))
       allow(game).to receive(:start_round)
-      expect(Representer).to receive(:game_info_text)
+      expect(Representer).to receive(:round_info_text)
       subject.send(:check_round_result)
     end
   end
