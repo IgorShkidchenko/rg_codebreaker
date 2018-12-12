@@ -3,7 +3,7 @@
 RSpec.describe Console do
   let(:subject) { described_class.new }
   let(:user) { double('User', name: 'John') }
-  let(:difficult) { double('Difficult', input: 'easy', level: Difficult::DIFFICULTS[:easy]) }
+  let(:difficult) { double('Difficult', input: 'easy', level: Difficult::DIFFICULTIES[:easy]) }
   let(:game) { double('Game', attempts: 10, hints: 1) }
   let(:long_name) { 'aaaaaaaaaaaaaaaaaaaaa' }
 
@@ -58,27 +58,27 @@ RSpec.describe Console do
     end
   end
 
-  describe 'validate_input_for' do
+  describe 'make_valid_input_for_class' do
     before { expect(subject).to receive(:user_input).exactly(3).times }
 
     context 'guess_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('qqqq', '111', '1111')
-        subject.send(:validate_input_for, Guess)
+        subject.send(:make_valid_input_for_class, Guess)
       end
     end
 
     context 'name_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('', long_name, 'Sam')
-        subject.send(:validate_input_for, User)
+        subject.send(:make_valid_input_for_class, User)
       end
     end
 
     context 'difficult_loop' do
       it do
         allow(subject).to receive(:user_input).and_return('', 'eeee', 'easy')
-        subject.send(:choose_difficult)
+        subject.send(:choose_difficulty)
       end
     end
   end
@@ -105,9 +105,9 @@ RSpec.describe Console do
     it do
       subject.instance_variable_set(:@game, Game.new(0, 0))
       subject.instance_variable_set(:@guess, Guess.new('1111'))
-      allow(game).to receive(:start)
+      allow(game).to receive(:start_round)
       expect(Representer).to receive(:game_info_text)
-      subject.send(:check_game_result)
+      subject.send(:check_round_result)
     end
   end
 

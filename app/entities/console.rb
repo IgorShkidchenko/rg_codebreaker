@@ -16,7 +16,7 @@ class Console < ValidatableEntity
   def main_menu
     loop do
       Representer.what_next_text
-      case validate_input_for(Navigator).input
+      case make_valid_input_for_class(Navigator).input
       when COMMANDS[:start] then return registration
       when COMMANDS[:rules] then Representer.show_rules
       when COMMANDS[:stats] then statistics
@@ -31,19 +31,23 @@ class Console < ValidatableEntity
     db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
   end
 
+  def sort_db
+    load_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
+  end
+
   def registration
     Representer.what_name_msg
-    @user = validate_input_for(User)
-    choose_difficult
+    @user = make_valid_input_for_class(User)
+    @difficult = choose_difficulty
     @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
     make_guess
   end
 
-  def choose_difficult
+  def choose_difficulty
     Representer.select_difficult_msg
     loop do
-      @difficult = Difficult.find(user_input)
-      break if @difficult
+      finded_level = Difficult.find(user_input)
+      break finded_level if finded_level
 
       Representer.error_msg(I18n.t('exceptions.include_error'))
     end
@@ -52,16 +56,16 @@ class Console < ValidatableEntity
   def make_guess
     loop do
       Representer.make_guess_msg
-      @guess = validate_input_for(Guess)
-      @guess.hint? ? show_hint : check_game_result
+      @guess = make_valid_input_for_class(Guess)
+      @guess.hint? ? show_hint : check_round_result
     end
   end
 
-  def check_game_result
+  def check_round_result
     guess_array = @guess.as_array_of_numbers
     return win if @game.win?(guess_array)
 
-    game_result = @game.start(guess_array)
+    game_result = @game.start_round(guess_array)
     return lose if @game.lose?
 
     Representer.game_info_text(game_result, @game.attempts, @game.hints)
@@ -86,7 +90,7 @@ class Console < ValidatableEntity
     save_to_db(StatisticsResult.new(name: @user.name, difficult: @difficult.level, game: @game))
   end
 
-  def validate_input_for(klass)
+  def make_valid_input_for_class(klass)
     loop do
       input = klass.new(user_input)
       input.validate

@@ -10,7 +10,7 @@ RSpec.describe Console do
   end
 
   describe '#sort_db' do
-    it { expect(subject.sort_db.first.name).to eq('Player1') }
+    it { expect(subject.send(:sort_db).first.name).to eq('Player1') }
   end
 
   describe '#save_to_db' do

@@ -35,7 +35,7 @@
 #     context 'level_easy' do
 #       it do
 #         subject.select_difficult
-#         expect(subject.level).to eq(Difficult::DIFFICULTS[:easy])
+#         expect(subject.level).to eq(Difficult::DIFFICULTIES[:easy])
 #       end
 #     end
 
@@ -43,7 +43,7 @@
 #       it do
 #         subject.instance_variable_set(:@input, 'medium')
 #         subject.select_difficult
-#         expect(subject.level).to eq(Difficult::DIFFICULTS[:medium])
+#         expect(subject.level).to eq(Difficult::DIFFICULTIES[:medium])
 #       end
 #     end
 
@@ -51,7 +51,7 @@
 #       it do
 #         subject.instance_variable_set(:@input, 'hell')
 #         subject.select_difficult
-#         expect(subject.level).to eq(Difficult::DIFFICULTS[:hell])
+#         expect(subject.level).to eq(Difficult::DIFFICULTIES[:hell])
 #       end
 #     end
 #   end

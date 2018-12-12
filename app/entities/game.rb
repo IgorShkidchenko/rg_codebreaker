@@ -16,7 +16,7 @@ class Game
     @attempts = attempts
   end
 
-  def start(user_input)
+  def start_round(user_input)
     @attempts -= 1
     @game_numbers = { code: @breaker_numbers.clone, input: user_input }
     collect_place_guess + collect_presence_guess

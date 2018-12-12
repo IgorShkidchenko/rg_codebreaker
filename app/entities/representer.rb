@@ -20,7 +20,7 @@ class Representer
     end
 
     def select_difficult_msg
-      puts I18n.t('console.select_difficult', difficults: Difficult::DIFFICULTS.keys.join(', '))
+      puts I18n.t('console.select_difficult', difficults: Difficult::DIFFICULTIES.keys.join(', '))
     end
 
     def make_guess_msg

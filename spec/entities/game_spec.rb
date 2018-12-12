@@ -26,7 +26,7 @@ RSpec.describe Game do
   end
 
   describe 'check_attempts_decrease' do
-    it { expect { subject.start([1, 1, 1, 1]) }.to change { subject.attempts }.by(-1) }
+    it { expect { subject.start_round([1, 1, 1, 1]) }.to change { subject.attempts }.by(-1) }
   end
 
   describe '#lose?' do
@@ -35,24 +35,14 @@ RSpec.describe Game do
       subject.instance_variable_set(:@attempts, 1)
     end
 
+    context 'lose_eq_false' do
+      it { expect(subject.lose?).to eq false }
+    end
+
     context 'lose_eq_true' do
       it do
-        subject.start([1, 2, 3, 4])
+        subject.start_round([1, 2, 3, 4])
         expect(subject.lose?).to eq true
-      end
-    end
-
-    context 'lose_eq_[]' do
-      it do
-        result = subject.start([1, 2, 3, 4])
-        expect(result).to eq []
-      end
-    end
-
-    context 'lose_eq_false' do
-      it do
-        subject.instance_variable_set(:@attempts, 1)
-        expect(subject.lose?).to eq false
       end
     end
   end
@@ -76,47 +66,47 @@ RSpec.describe Game do
     end
   end
 
-  describe '#check_start_with_[1, 2, 3, 4]' do
+  describe '#check_start_round_with_[1, 2, 3, 4]' do
     before { subject.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     it do
       guess = [3, 1, 2, 4]
-      result = subject.start(guess)
+      result = subject.start_round(guess)
       expect(result).to eq ['+', '-', '-', '-']
     end
 
     it do
       guess = [1, 5, 2, 4]
-      result = subject.start(guess)
+      result = subject.start_round(guess)
       expect(result).to eq ['+', '+', '-']
     end
   end
 
-  describe '#check_start_with_[6, 5, 4, 3]' do
+  describe '#check_start_round_with_[6, 5, 4, 3]' do
     before { subject.instance_variable_set(:@breaker_numbers, [6, 5, 4, 3]) }
 
     context 'with_pluses' do
       it do
         guess = [5, 6, 4, 3]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['+', '+', '-', '-']
       end
 
       it do
         guess = [6, 4, 1, 1]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['+', '-']
       end
 
       it do
         guess = [6, 5, 4, 4]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['+', '+', '+']
       end
 
       it do
         guess = [6, 6, 6, 6]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['+']
       end
     end
@@ -124,35 +114,35 @@ RSpec.describe Game do
     context 'with_minuses' do
       it do
         guess = [3, 4, 5, 6]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['-', '-', '-', '-']
       end
 
       it do
         guess = [3, 4, 5, 6]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['-', '-', '-', '-']
       end
 
       it do
         guess = [2, 6, 6, 6]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq ['-']
       end
 
       it do
         guess = [2, 2, 2, 2]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq []
       end
     end
   end
 
-  describe '#check_start_with_[6, 6, 6, 6]' do
+  describe '#check_start_round_with_[6, 6, 6, 6]' do
     it do
       subject.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
       guess = [1, 6, 6, 1]
-      result = subject.start(guess)
+      result = subject.start_round(guess)
       expect(result).to eq ['+', '+']
     end
   end
@@ -181,7 +171,7 @@ RSpec.describe Game do
       it "should return #{item[2]} if code is - #{item[0]}, atttempt_code is #{item[1]}" do
         subject.instance_variable_set(:@breaker_numbers, item[0])
         guess = item[1]
-        result = subject.start(guess)
+        result = subject.start_round(guess)
         expect(result).to eq item[2]
       end
     end
