@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Representer do
-  let(:one) { 1 }
+  let(:some_arg) { 1 }
   let(:error) { 'Invalid error' }
   let(:result) do
     double('StatisticsResult', name: 'John', all_attempts: 15,
@@ -14,9 +14,9 @@ RSpec.describe Representer do
     it { expect { Representer.what_name_msg }.to output(/What is your name/).to_stdout }
     it { expect { Representer.select_difficult_msg }.to output(/Select difficulty: easy, medium, hell/).to_stdout }
     it { expect { Representer.make_guess_msg }.to output(/Make your guess/).to_stdout }
-    it { expect { Representer.showed_hint_msg(one) }.to output(/Code contains this number:/).to_stdout }
+    it { expect { Representer.showed_hint_msg(some_arg) }.to output(/Code contains this number:/).to_stdout }
     it { expect { Representer.zero_hints_msg }.to output(/You don't have any hints/).to_stdout }
-    it { expect { Representer.round_info_text(one, one, one) }.to output(/Your result is 1/).to_stdout }
+    it { expect { Representer.round_info_text(some_arg, some_arg, some_arg) }.to output(/Your result is 1/).to_stdout }
     it { expect { Representer.win_msg }.to output(/You win/).to_stdout }
     it { expect { Representer.lose_msg }.to output(/Game over/).to_stdout }
     it { expect { Representer.empty_db_msg }.to output(/You are the first one/).to_stdout }

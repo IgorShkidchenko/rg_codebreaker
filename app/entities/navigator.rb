@@ -9,6 +9,6 @@ class Navigator < ValidatableEntity
   end
 
   def validate
-    @errors << I18n.t('exceptions.include_error') unless check_include?(@input, Console::COMMANDS.values)
+    @errors << I18n.t('invalid.include_error') unless check_include?(@input, Console::COMMANDS.values)
   end
 end

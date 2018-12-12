@@ -14,8 +14,8 @@ class Guess < ValidatableEntity
   def validate
     return if hint?
 
-    @errors << I18n.t('exceptions.include_error') unless check_numbers?(@input, VALID_NUMBERS)
-    @errors << I18n.t('exceptions.size_error') unless check_size?(@input, Game::CODE_SIZE)
+    @errors << I18n.t('invalid.include_error') unless check_numbers?(@input, VALID_NUMBERS)
+    @errors << I18n.t('invalid.size_error') unless check_size?(@input, Game::CODE_SIZE)
   end
 
   def as_array_of_numbers

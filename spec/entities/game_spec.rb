@@ -1,16 +1,20 @@
 # frozen_string_literal: true
 
 RSpec.describe Game do
-  let(:subject) { described_class.new(15, 2) }
+  let(:attempts) { 15 }
+  let(:hints) { 2 }
+  let(:subject) { described_class.new(attempts, hints) }
+  let(:guess_place) { Game::GUESS_PLACE }
+  let(:guess_presence) { Game::GUESS_PRESENCE }
 
   describe '.new' do
-    it { expect(subject.attempts).to eq(15) }
-    it { expect(subject.hints).to eq(2) }
+    it { expect(subject.attempts).to eq(attempts) }
+    it { expect(subject.hints).to eq(hints) }
   end
 
   describe '#hint' do
     context 'check_hint_including_in_code' do
-      it { expect(subject.breaker_numbers).to include(subject.hint) }
+      it { expect(subject.instance_variable_get(:@breaker_numbers)).to include(subject.hint) }
     end
 
     context 'check_hints_decrease' do
@@ -54,7 +58,7 @@ RSpec.describe Game do
     before { subject.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
 
     context 'win_eq_all_guessed' do
-      it { expect(guess).to eq subject.breaker_numbers }
+      it { expect(subject.instance_variable_get(:@breaker_numbers)).to eq(guess) }
     end
 
     context 'win_eq_true' do
@@ -71,14 +75,12 @@ RSpec.describe Game do
 
     it do
       guess = [3, 1, 2, 4]
-      result = subject.start_round(guess)
-      expect(result).to eq ['+', '-', '-', '-']
+      expect(subject.start_round(guess)).to eq [guess_place, guess_presence, guess_presence, guess_presence]
     end
 
     it do
       guess = [1, 5, 2, 4]
-      result = subject.start_round(guess)
-      expect(result).to eq ['+', '+', '-']
+      expect(subject.start_round(guess)).to eq [guess_place, guess_place, guess_presence]
     end
   end
 
@@ -88,52 +90,44 @@ RSpec.describe Game do
     context 'with_pluses' do
       it do
         guess = [5, 6, 4, 3]
-        result = subject.start_round(guess)
-        expect(result).to eq ['+', '+', '-', '-']
+        expect(subject.start_round(guess)).to eq [guess_place, guess_place, guess_presence, guess_presence]
       end
 
       it do
         guess = [6, 4, 1, 1]
-        result = subject.start_round(guess)
-        expect(result).to eq ['+', '-']
+        expect(subject.start_round(guess)).to eq [guess_place, guess_presence]
       end
 
       it do
         guess = [6, 5, 4, 4]
-        result = subject.start_round(guess)
-        expect(result).to eq ['+', '+', '+']
+        expect(subject.start_round(guess)).to eq [guess_place, guess_place, guess_place]
       end
 
       it do
         guess = [6, 6, 6, 6]
-        result = subject.start_round(guess)
-        expect(result).to eq ['+']
+        expect(subject.start_round(guess)).to eq [guess_place]
       end
     end
 
     context 'with_minuses' do
       it do
         guess = [3, 4, 5, 6]
-        result = subject.start_round(guess)
-        expect(result).to eq ['-', '-', '-', '-']
+        expect(subject.start_round(guess)).to eq [guess_presence, guess_presence, guess_presence, guess_presence]
       end
 
       it do
         guess = [3, 4, 5, 6]
-        result = subject.start_round(guess)
-        expect(result).to eq ['-', '-', '-', '-']
+        expect(subject.start_round(guess)).to eq [guess_presence, guess_presence, guess_presence, guess_presence]
       end
 
       it do
         guess = [2, 6, 6, 6]
-        result = subject.start_round(guess)
-        expect(result).to eq ['-']
+        expect(subject.start_round(guess)).to eq [guess_presence]
       end
 
       it do
         guess = [2, 2, 2, 2]
-        result = subject.start_round(guess)
-        expect(result).to eq []
+        expect(subject.start_round(guess)).to eq []
       end
     end
   end
@@ -142,37 +136,38 @@ RSpec.describe Game do
     it do
       subject.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
       guess = [1, 6, 6, 1]
-      result = subject.start_round(guess)
-      expect(result).to eq ['+', '+']
+      expect(subject.start_round(guess)).to eq [guess_place, guess_place]
     end
   end
 
   describe 'ruby_garage_tests' do
     [
-      [[6, 5, 4, 1], [6, 5, 4, 1], ['+', '+', '+', '+']],
-      [[1, 2, 2, 1], [2, 1, 1, 2], ['-', '-', '-', '-']],
-      [[6, 2, 3, 5], [2, 3, 6, 5], ['+', '-', '-', '-']],
-      [[1, 2, 3, 4], [4, 3, 2, 1], ['-', '-', '-', '-']],
-      [[1, 2, 3, 4], [1, 2, 3, 5], ['+', '+', '+']],
-      [[1, 2, 3, 4], [5, 4, 3, 1], ['+', '-', '-']],
-      [[1, 2, 3, 4], [1, 5, 2, 4], ['+', '+', '-']],
-      [[1, 2, 3, 4], [4, 3, 2, 6], ['-', '-', '-']],
-      [[1, 2, 3, 4], [3, 5, 2, 5], ['-', '-']],
-      [[1, 2, 3, 4], [5, 6, 1, 2], ['-', '-']],
-      [[5, 5, 6, 6], [5, 6, 0, 0], ['+', '-']],
-      [[1, 2, 3, 4], [6, 2, 5, 4], ['+', '+']],
-      [[1, 2, 3, 1], [1, 1, 1, 1], ['+', '+']],
-      [[1, 1, 1, 5], [1, 2, 3, 1], ['+', '-']],
-      [[1, 2, 3, 4], [4, 2, 5, 5], ['+', '-']],
-      [[1, 2, 3, 4], [5, 6, 3, 5], ['+']],
+      [[6, 5, 4, 1], [6, 5, 4, 1], [Game::GUESS_PLACE, Game::GUESS_PLACE, Game::GUESS_PLACE, Game::GUESS_PLACE]],
+      [[1, 2, 2, 1], [2, 1, 1, 2], [Game::GUESS_PRESENCE, Game::GUESS_PRESENCE,
+                                    Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[6, 2, 3, 5], [2, 3, 6, 5], [Game::GUESS_PLACE, Game::GUESS_PRESENCE,
+                                    Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [4, 3, 2, 1], [Game::GUESS_PRESENCE, Game::GUESS_PRESENCE,
+                                    Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [1, 2, 3, 5], [Game::GUESS_PLACE, Game::GUESS_PLACE, Game::GUESS_PLACE]],
+      [[1, 2, 3, 4], [5, 4, 3, 1], [Game::GUESS_PLACE, Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [1, 5, 2, 4], [Game::GUESS_PLACE, Game::GUESS_PLACE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [4, 3, 2, 6], [Game::GUESS_PRESENCE, Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [3, 5, 2, 5], [Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [5, 6, 1, 2], [Game::GUESS_PRESENCE, Game::GUESS_PRESENCE]],
+      [[5, 5, 6, 6], [5, 6, 0, 0], [Game::GUESS_PLACE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [6, 2, 5, 4], [Game::GUESS_PLACE, Game::GUESS_PLACE]],
+      [[1, 2, 3, 1], [1, 1, 1, 1], [Game::GUESS_PLACE, Game::GUESS_PLACE]],
+      [[1, 1, 1, 5], [1, 2, 3, 1], [Game::GUESS_PLACE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [4, 2, 5, 5], [Game::GUESS_PLACE, Game::GUESS_PRESENCE]],
+      [[1, 2, 3, 4], [5, 6, 3, 5], [Game::GUESS_PLACE]],
       [[1, 2, 3, 4], [6, 6, 6, 6], []],
-      [[1, 2, 3, 4], [2, 5, 5, 2], ['-']]
+      [[1, 2, 3, 4], [2, 5, 5, 2], [Game::GUESS_PRESENCE]]
     ].each do |item|
       it "should return #{item[2]} if code is - #{item[0]}, atttempt_code is #{item[1]}" do
         subject.instance_variable_set(:@breaker_numbers, item[0])
         guess = item[1]
-        result = subject.start_round(guess)
-        expect(result).to eq item[2]
+        expect(subject.start_round(guess)).to eq item[2]
       end
     end
   end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Game
-  attr_reader :hints, :attempts, :breaker_numbers
+  attr_reader :hints, :attempts
 
   INCLUDE_IN_GAME_NUMBERS = (1..6).freeze
   CODE_SIZE = 4

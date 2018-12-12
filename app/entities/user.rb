@@ -11,6 +11,6 @@ class User < ValidatableEntity
   end
 
   def validate
-    @errors << I18n.t('exceptions.cover_error') unless check_cover?(@name, VALID_NAME_SIZE)
+    @errors << I18n.t('invalid.cover_error') unless check_cover?(@name, VALID_NAME_SIZE)
   end
 end

@@ -35,7 +35,7 @@ en:
       • If codebreaker inputs the exact number as a secret number - codebreaker wins the game. If all attempts are spent - codebreaker loses.\n
       • Codebreaker also has some number of hints(depends on chosen difficulty). If a user takes a hint - he receives back a separate digit of the secret code.\n"
   error: "Unexpected input, it was '%{error}', try one more time"
-  exceptions:
+  invalid:
     cover_error: 'Improper size'
     include_error: 'Not include in propose inputs'
     size_error: 'Invalid size'

@@ -1,38 +1,56 @@
 # frozen_string_literal: true
 
 RSpec.describe Guess do
-  let(:subject) { described_class.new('1111') }
+  let(:valid_guess) { Guess::VALID_NUMBERS.sample(4).join }
+  let(:subject) { described_class.new(valid_guess) }
+  let(:invalid_guess) { '777' }
 
   describe '.new' do
-    it { expect(subject.input).to eq('1111') }
+    it { expect(subject.input).to eq(valid_guess) }
+    it { expect(subject.instance_variable_get(:@errors)).to eq([]) }
   end
 
   describe '#as_array_of_numbers' do
-    it { expect(subject.as_array_of_numbers).to eq([1, 1, 1, 1]) }
+    it { expect(subject.as_array_of_numbers).to eq(valid_guess.chars.map(&:to_i)) }
   end
 
-  describe '#validate' do
-    context 'valid' do
-      it { expect(subject.validate).to eq(nil) }
+  describe 'valid_check' do
+    before { subject.validate }
 
-      it do
-        subject.instance_variable_set(:@input, Guess::HINT)
-        expect do
-          subject.validate
-          expect(subject.errors).to eq([])
-        end.to change { subject.errors.size }.by(0)
-      end
+    context '#validate' do
+      it { expect(subject.errors.empty?).to eq(true) }
+    end
 
+    context '#valid?' do
       it { expect(subject.valid?).to eq(true) }
     end
 
-    context 'invalid' do
+    context '#hint?' do
       it do
-        subject.instance_variable_set(:@input, '777')
-        expect do
-          subject.validate
-          expect(subject.errors).to eq(['Not include in propose inputs', 'Invalid size'])
-        end.to change { subject.errors.size }.by(2)
+        subject.instance_variable_set(:@input, Guess::HINT)
+        expect(subject.valid?).to eq(true)
+      end
+    end
+  end
+
+  describe 'invalid_check' do
+    before do
+      subject.instance_variable_set(:@input, invalid_guess)
+      subject.validate
+    end
+
+    context '#validate' do
+      it { expect(subject.errors).to eq([I18n.t('invalid.include_error'), I18n.t('invalid.size_error')]) }
+    end
+
+    context '#valid?' do
+      it { expect(subject.valid?).to eq(false) }
+    end
+
+    context '#hint?' do
+      it do
+        subject.instance_variable_set(:@input, Guess::HINT.succ)
+        expect(subject.valid?).to eq(false)
       end
     end
   end

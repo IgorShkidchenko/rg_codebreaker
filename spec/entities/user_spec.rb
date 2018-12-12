@@ -1,37 +1,39 @@
 # frozen_string_literal: true
 
 RSpec.describe User do
-  let(:subject) { described_class.new('John') }
+  let(:valid_name) { 'John' }
+  let(:subject) { described_class.new(valid_name) }
+  let(:empty_string) { '' }
 
   describe '.new' do
-    it { expect(subject.name).to eq('John') }
+    it { expect(subject.name).to eq(valid_name) }
+    it { expect(subject.instance_variable_get(:@errors)).to eq([]) }
   end
 
-  describe '#validate_and_valid?' do
-    context 'valid' do
-      it do
-        expect do
-          subject.validate
-          expect(subject.errors).to eq([])
-        end.to change { subject.errors.size }.by(0)
-      end
+  describe 'valid' do
+    before { subject.validate }
 
-      it { expect(subject.valid?).to eq(true) }
+    context '#validate' do
+      it { expect(subject.errors.empty?).to eq(true) }
     end
 
-    context 'invalid' do
-      it do
-        subject.instance_variable_set(:@name, '')
-        expect do
-          subject.validate
-          expect(subject.errors).to eq(['Improper size'])
-        end.to change { subject.errors.size }.by(1)
-      end
+    context '#valid?' do
+      it { expect(subject.valid?).to eq(true) }
+    end
+  end
 
-      it do
-        subject.instance_variable_set(:@errors, [''])
-        expect(subject.valid?).to eq(false)
-      end
+  describe 'invalid' do
+    before do
+      subject.instance_variable_set(:@name, empty_string)
+      subject.validate
+    end
+
+    context '#validate' do
+      it { expect(subject.errors).to eq([I18n.t('invalid.cover_error')]) }
+    end
+
+    context '#valid?' do
+      it { expect(subject.valid?).to eq(false) }
     end
   end
 end

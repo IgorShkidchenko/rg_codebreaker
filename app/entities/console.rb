@@ -49,23 +49,22 @@ class Console < ValidatableEntity
       finded_level = Difficult.find(user_input)
       break finded_level if finded_level
 
-      Representer.error_msg(I18n.t('exceptions.include_error'))
+      Representer.error_msg(I18n.t('invalid.include_error'))
     end
   end
 
   def make_guess
     loop do
       Representer.make_guess_msg
-      @guess = make_valid_input_for_class(Guess)
-      @guess.hint? ? show_hint : check_round_result
+      guess = make_valid_input_for_class(Guess)
+      guess.hint? ? show_hint : check_round_result(guess.as_array_of_numbers)
     end
   end
 
-  def check_round_result
-    guess_array = @guess.as_array_of_numbers
-    return win if @game.win?(guess_array)
+  def check_round_result(guess)
+    return win if @game.win?(guess)
 
-    round_result = @game.start_round(guess_array)
+    round_result = @game.start_round(guess)
     return lose if @game.lose?
 
     Representer.round_info_text(round_result, @game.attempts, @game.hints)
