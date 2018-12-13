@@ -2,12 +2,13 @@
 
 RSpec.describe Console do
   let(:subject) { described_class.new }
-  let(:valid_length) { 'John' }
-  let(:valid_numbers) { '1234' }
+  let(:valid_length) { 'a' * User::VALID_NAME_SIZE.first }
+  let(:valid_numbers) { Guess::VALID_NUMBERS.first * Game::CODE_SIZE }
 
-  let(:invalid_max_length) { valid_length * 10 }
-  let(:invalid_min_length) { valid_length.slice(0, 1) }
-  let(:invalid_numbers) { '9999' }
+  let(:invalid_max_length) { 'a' * (User::VALID_NAME_SIZE.max + 1) }
+  let(:invalid_min_length) { 'a' * (User::VALID_NAME_SIZE.min - 1) }
+  let(:invalid_numbers_min) { (Game::INCLUDE_IN_GAME_NUMBERS.min - 1).to_s * (Game::CODE_SIZE - 1) }
+  let(:invalid_numbers_max) { (Game::INCLUDE_IN_GAME_NUMBERS.max + 1).to_s * (Game::CODE_SIZE + 1) }
 
   describe 'valid_check' do
     context '#check_cover' do
@@ -19,11 +20,11 @@ RSpec.describe Console do
     end
 
     context '#check_size' do
-      it { expect(subject.check_size?(valid_length, Game::CODE_SIZE)).to eq(true) }
+      it { expect(subject.check_size?(valid_numbers, Game::CODE_SIZE)).to eq(true) }
     end
 
     context '#check_include' do
-      it { expect(subject.check_include?(valid_numbers.slice(0, 1), Guess::VALID_NUMBERS)).to eq(true) }
+      it { expect(subject.check_include?(Console::COMMANDS[:start], Console::COMMANDS.values)).to eq(true) }
     end
   end
 
@@ -37,7 +38,7 @@ RSpec.describe Console do
     end
 
     context '#check_numbers?' do
-      it { expect(subject.check_numbers?(invalid_numbers, Guess::VALID_NUMBERS)).to eq(false) }
+      it { expect(subject.check_numbers?(invalid_numbers_min, Guess::VALID_NUMBERS)).to eq(false) }
     end
 
     context '#check_size?' do
@@ -45,7 +46,7 @@ RSpec.describe Console do
     end
 
     context '#check_include?' do
-      it { expect(subject.check_include?(invalid_numbers.slice(0, 1), Guess::VALID_NUMBERS)).to eq(false) }
+      it { expect(subject.check_include?(invalid_numbers_max, Guess::VALID_NUMBERS)).to eq(false) }
     end
   end
 end

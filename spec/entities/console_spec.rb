@@ -3,19 +3,25 @@
 RSpec.describe Console do
   let(:subject) { described_class.new }
   let(:user_double) { double('User', name: 'John') }
-  let(:difficult_double) { double('Difficult', input: 'easy', level: Difficult::DIFFICULTIES[:easy]) }
-  let(:game_double) { double('Game', attempts: 15, hints: 2) }
   let(:game_double_with_zeros) { double('Game', attempts: 0, hints: 0) }
+  let(:game_double) do
+    double('Game', attempts: Difficult::DIFFICULTIES[:easy][:attempts],
+                   hints: Difficult::DIFFICULTIES[:easy][:hints])
+  end
+  let(:difficult_double) do
+    double('Difficult', input: Difficult::DIFFICULTIES[:easy][:level],
+                        level: Difficult::DIFFICULTIES[:easy])
+  end
 
   let(:path_to_test_db) { './spec/fixtures/test_database.yaml' }
   let(:valid_path) { [Console::COMMANDS[:start], user_double.name, Difficult::DIFFICULTIES[:easy][:level]] }
   let(:valid_guess) { Guess::VALID_NUMBERS.sample(4).join }
   let(:first_name_when_sort_db) { 'Player1' }
 
-  let(:empty_string) { '' }
-  let(:long_name) { 'aaaaaaaaaaaaaaaaaaaaa' }
-  let(:invalid_guess) { '9999' }
-  let(:two_invalid_strings) { [empty_string, long_name] }
+  let(:invalid_guess) { (Game::INCLUDE_IN_GAME_NUMBERS.max + 1).to_s * (Game::CODE_SIZE - 1) }
+  let(:invalid_max_length) { 'a' * (User::VALID_NAME_SIZE.max + 1) }
+  let(:invalid_min_length) { 'a' * (User::VALID_NAME_SIZE.min - 1) }
+  let(:two_invalid_strings) { [invalid_max_length, invalid_min_length] }
 
   describe '.new' do
     it { expect(subject.instance_variable_get(:@errors)).to eq([]) }
@@ -76,7 +82,7 @@ RSpec.describe Console do
 
     context '#make_valid_input_for_class(Guess)' do
       it do
-        allow(subject).to receive(:user_input).and_return(empty_string, invalid_guess, valid_guess)
+        allow(subject).to receive(:user_input).and_return(invalid_min_length, invalid_guess, valid_guess)
         subject.send(:make_valid_input_for_class, Guess)
       end
     end
@@ -181,7 +187,7 @@ RSpec.describe Console do
     end
 
     it 'with_no' do
-      allow(subject).to receive(:user_input) { empty_string }
+      allow(subject).to receive(:user_input) { invalid_min_length }
       expect(subject).to receive(:main_menu)
     end
   end
@@ -192,7 +198,7 @@ RSpec.describe Console do
 
     context 'with_empty_db' do
       it do
-        allow(subject).to receive(:sort_db) { empty_string }
+        allow(subject).to receive(:sort_db) { [] }
         expect(Representer).to receive(:empty_db_msg)
       end
     end

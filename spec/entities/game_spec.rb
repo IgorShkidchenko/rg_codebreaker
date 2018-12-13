@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe Game do
-  let(:attempts) { 15 }
-  let(:hints) { 2 }
+  let(:attempts) { Difficult::DIFFICULTIES[:easy][:attempts] }
+  let(:hints) { Difficult::DIFFICULTIES[:easy][:hints] }
   let(:subject) { described_class.new(attempts, hints) }
   let(:guess_place) { Game::GUESS_PLACE }
   let(:guess_presence) { Game::GUESS_PRESENCE }

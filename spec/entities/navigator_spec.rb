@@ -2,8 +2,8 @@
 
 RSpec.describe Navigator do
   let(:subject) { described_class.new(Console::COMMANDS[:start]) }
-  let(:empty_string) { '' }
-  let(:valid_inputs) { %w[start stats rules] }
+  let(:valid_inputs) { [Console::COMMANDS[:start], Console::COMMANDS[:stats], Console::COMMANDS[:rules]] }
+  let(:invalid_input) { Console::COMMANDS[:start].succ }
 
   describe '.new' do
     it { expect(subject.input).to eq(Console::COMMANDS[:start]) }
@@ -28,7 +28,7 @@ RSpec.describe Navigator do
 
   describe 'invalid' do
     before do
-      subject.instance_variable_set(:@input, empty_string)
+      subject.instance_variable_set(:@input, invalid_input)
       subject.validate
     end
 

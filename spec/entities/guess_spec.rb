@@ -3,7 +3,7 @@
 RSpec.describe Guess do
   let(:valid_guess) { Guess::VALID_NUMBERS.sample(4).join }
   let(:subject) { described_class.new(valid_guess) }
-  let(:invalid_guess) { '777' }
+  let(:invalid_guess) { (Game::INCLUDE_IN_GAME_NUMBERS.max + 1).to_s * (Game::CODE_SIZE - 1) }
 
   describe '.new' do
     it { expect(subject.input).to eq(valid_guess) }

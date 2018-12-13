@@ -2,9 +2,9 @@
 
 RSpec.describe StatisticsResult do
   let(:user_name) { 'John' }
-  let(:difficult) { { attempts: 15, hints: 2, level: 'easy' } }
+  let(:difficult) { Difficult::DIFFICULTIES[:easy] }
   let(:game) { double('Game', attempts: 10, hints: 1) }
-  let(:statistic) { StatisticsResult.new(name: user_name, difficult: difficult, game: game) }
+  let(:statistic) { described_class.new(name: user_name, difficult: difficult, game: game) }
 
   describe '.new' do
     it { expect(statistic.name).to eq('John') }
