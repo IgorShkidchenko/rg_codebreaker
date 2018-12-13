@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
 RSpec.describe Console do
-  let(:subject) { described_class.new }
-  let(:user_double) { double('User', name: 'John') }
-  let(:game_double_with_zeros) { double('Game', attempts: 0, hints: 0) }
+  subject(:console) { described_class.new }
+
+  let(:user_double) { instance_double('User', name: 'John') }
+  let(:game_double_with_zeros) { instance_double('Game', attempts: 0, hints: 0) }
+  let(:difficult_double) { instance_double('Difficult', level: Difficult::DIFFICULTIES[:easy]) }
   let(:game_double) do
-    double('Game', attempts: Difficult::DIFFICULTIES[:easy][:attempts],
+    instance_double('Game', attempts: Difficult::DIFFICULTIES[:easy][:attempts],
                    hints: Difficult::DIFFICULTIES[:easy][:hints])
-  end
-  let(:difficult_double) do
-    double('Difficult', input: Difficult::DIFFICULTIES[:easy][:level],
-                        level: Difficult::DIFFICULTIES[:easy])
   end
 
   let(:path_to_test_db) { './spec/fixtures/test_database.yaml' }
@@ -24,100 +22,100 @@ RSpec.describe Console do
   let(:two_invalid_strings) { [invalid_max_length, invalid_min_length] }
 
   describe '.new' do
-    it { expect(subject.instance_variable_get(:@errors)).to eq([]) }
+    it { expect(console.instance_variable_get(:@errors)).to eq([]) }
   end
 
   describe '#greating' do
     it do
       expect(Representer).to receive(:greeting_msg)
-      subject.greeting
+      console.greeting
     end
   end
 
   describe 'navigate' do
-    after { subject.main_menu }
+    after { console.main_menu }
 
     describe '#main_menu' do
-      context 'registration_redirect' do
+      before { allow(console).to receive(:registration) }
+
+      context 'when registration_redirect' do
         it do
-          allow(subject).to receive(:user_input).and_return(Console::COMMANDS[:start])
-          expect(subject).to receive(:registration)
+          allow(console).to receive(:user_input).and_return(Console::COMMANDS[:start])
+          expect(console).to receive(:registration)
         end
       end
 
-      before { allow(subject).to receive(:registration) }
-
-      context '#show_rules_redirect_and_show' do
+      context 'when #show_rules_redirect_and_show' do
         it do
-          allow(subject).to receive(:user_input).and_return(Console::COMMANDS[:rules], Console::COMMANDS[:start])
+          allow(console).to receive(:user_input).and_return(Console::COMMANDS[:rules], Console::COMMANDS[:start])
           expect(Representer).to receive(:show_rules)
         end
       end
 
-      context 'statistics_redirect' do
+      context 'when statistics_redirect' do
         it do
-          allow(subject).to receive(:user_input).and_return(Console::COMMANDS[:stats], Console::COMMANDS[:start])
-          expect(subject).to receive(:statistics)
+          allow(console).to receive(:user_input).and_return(Console::COMMANDS[:stats], Console::COMMANDS[:start])
+          expect(console).to receive(:statistics)
         end
       end
 
-      context 'invalid' do
+      context 'when invalid' do
         it do
-          allow(subject).to receive(:user_input).and_return(*two_invalid_strings, Console::COMMANDS[:start])
+          allow(console).to receive(:user_input).and_return(*two_invalid_strings, Console::COMMANDS[:start])
           expect(Representer).to receive(:error_msg).twice
         end
       end
     end
 
-    context 'redirect_to_make_guess' do
+    context 'when redirect_to_make_guess' do
       it do
-        allow(subject).to receive(:user_input).and_return(*valid_path)
-        expect(subject).to receive(:make_guess)
+        allow(console).to receive(:user_input).and_return(*valid_path)
+        expect(console).to receive(:make_guess)
       end
     end
   end
 
   describe 'check_loops' do
-    before { expect(subject).to receive(:user_input).exactly(3).times }
+    before { expect(console).to receive(:user_input).exactly(3).times }
 
-    context '#make_valid_input_for_class(Guess)' do
+    context 'when #make_valid_input_for_class(Guess)' do
       it do
-        allow(subject).to receive(:user_input).and_return(invalid_min_length, invalid_guess, valid_guess)
-        subject.send(:make_valid_input_for_class, Guess)
+        allow(console).to receive(:user_input).and_return(invalid_min_length, invalid_guess, valid_guess)
+        console.send(:make_valid_input_for_class, Guess)
       end
     end
 
-    context '#make_valid_input_for_class(User)' do
+    context 'when #make_valid_input_for_class(User)' do
       it do
-        allow(subject).to receive(:user_input).and_return(*two_invalid_strings, user_double.name)
-        subject.send(:make_valid_input_for_class, User)
+        allow(console).to receive(:user_input).and_return(*two_invalid_strings, user_double.name)
+        console.send(:make_valid_input_for_class, User)
       end
     end
 
-    context '#choose_difficulty' do
+    context 'when #choose_difficulty' do
       it do
-        allow(subject).to receive(:user_input).and_return(*two_invalid_strings, Difficult::DIFFICULTIES[:easy][:level])
-        subject.send(:choose_difficulty)
+        allow(console).to receive(:user_input).and_return(*two_invalid_strings, Difficult::DIFFICULTIES[:easy][:level])
+        console.send(:choose_difficulty)
       end
     end
   end
 
   describe '#show_hint' do
     after do
-      allow(subject.instance_variable_get(:@game)).to receive(:hint)
-      subject.send(:show_hint)
+      allow(console.instance_variable_get(:@game)).to receive(:hint)
+      console.send(:show_hint)
     end
 
-    context 'with_some_hints' do
+    context 'when with_some_hints' do
       it do
-        subject.instance_variable_set(:@game, game_double)
+        console.instance_variable_set(:@game, game_double)
         expect(Representer).to receive(:showed_hint_msg)
       end
     end
 
-    context 'with_zero_hints' do
+    context 'when with_zero_hints' do
       it do
-        subject.instance_variable_set(:@game, game_double_with_zeros)
+        console.instance_variable_set(:@game, game_double_with_zeros)
         expect(Representer).to receive(:zero_hints_msg)
       end
     end
@@ -125,85 +123,82 @@ RSpec.describe Console do
 
   describe '#check_round_result' do
     before do
-      subject.instance_variable_set(:@game, game_double_with_zeros)
-      allow(subject.instance_variable_get(:@game)).to receive(:win?)
+      console.instance_variable_set(:@game, game_double_with_zeros)
+      allow(console.instance_variable_get(:@game)).to receive(:win?)
     end
 
     after do
-      allow(subject.instance_variable_get(:@game)).to receive(:start_round)
-      subject.send(:check_round_result, nil)
+      allow(console.instance_variable_get(:@game)).to receive(:start_round)
+      console.send(:check_round_result, nil)
     end
 
-    context 'redirect_to_lose_if_zero_attempts_left' do
+    before { allow(console.instance_variable_get(:@game)).to receive(:lose?).and_return(false) }
+
+    context 'when redirect_to_lose_if_zero_attempts_left' do
       it do
-        allow(subject.instance_variable_get(:@game)).to receive(:lose?) { true }
-        expect(subject).to receive(:lose)
+        allow(console.instance_variable_get(:@game)).to receive(:lose?).and_return(true)
+        expect(console).to receive(:lose)
       end
     end
 
-    before { allow(subject.instance_variable_get(:@game)).to receive(:lose?) { false } }
-
-    context 'show_round_info_text_if_pass_win_and_lose_checks' do
+    context 'when show_round_info_text_if_pass_win_and_lose_checks' do
       it { expect(Representer).to receive(:round_info_text) }
     end
 
-    context 'redirect_to_win_if_guess_eq_code' do
+    context 'when redirect_to_win_if_guess_eq_code' do
       it do
-        allow(subject.instance_variable_get(:@game)).to receive(:win?) { true }
-        expect(subject).to receive(:win)
+        allow(console.instance_variable_get(:@game)).to receive(:win?).and_return(true)
+        expect(console).to receive(:win)
       end
     end
   end
 
   describe 'save_result' do
     it do
-      subject.instance_variable_set(:@game, game_double)
-      subject.instance_variable_set(:@user, user_double)
-      subject.instance_variable_set(:@difficult, difficult_double)
-      expect(subject).to receive(:save_to_db)
-      subject.send(:save_result)
+      console.instance_variable_set(:@game, game_double)
+      console.instance_variable_set(:@user, user_double)
+      console.instance_variable_set(:@difficult, difficult_double)
+      expect(console).to receive(:save_to_db)
+      console.send(:save_result)
     end
   end
 
   describe '#lose' do
     it do
-      allow(subject).to receive(:main_menu)
+      allow(console).to receive(:main_menu)
       expect(Representer).to receive(:lose_msg)
-      subject.send(:lose)
+      console.send(:lose)
     end
   end
 
   describe '#win' do
-    before do
-      expect(Representer).to receive(:win_msg)
-      allow(subject).to receive(:main_menu)
-    end
-
-    after { subject.send(:win) }
+    after { console.send(:win) }
 
     it 'with_yes' do
-      allow(subject).to receive(:user_input) { Console::ACCEPT_SAVING_RESULT }
-      expect(subject).to receive(:save_result)
+      allow(console).to receive(:main_menu)
+      allow(console).to receive(:user_input).and_return(Console::ACCEPT_SAVING_RESULT)
+      expect(console).to receive(:save_result)
     end
 
     it 'with_no' do
-      allow(subject).to receive(:user_input) { invalid_min_length }
-      expect(subject).to receive(:main_menu)
+      allow(console).to receive(:user_input) { invalid_min_length }
+      expect(console).to receive(:main_menu)
     end
   end
 
   describe '#statistics' do
-    before { allow(subject).to receive(:main_menu) }
-    after { subject.send(:statistics) }
+    before { allow(console).to receive(:main_menu) }
 
-    context 'with_empty_db' do
+    after { console.send(:statistics) }
+
+    context 'when with_empty_db' do
       it do
-        allow(subject).to receive(:sort_db) { [] }
+        allow(console).to receive(:sort_db).and_return([])
         expect(Representer).to receive(:empty_db_msg)
       end
     end
 
-    context 'with_not_empty_db' do
+    context 'when with_not_empty_db' do
       it do
         stub_const('Uploader::PATH', path_to_test_db)
         expect(Representer).to receive(:show_db)
@@ -214,18 +209,18 @@ RSpec.describe Console do
   describe '#sort_db' do
     it do
       stub_const('Uploader::PATH', path_to_test_db)
-      expect(subject.send(:sort_db).first.name).to eq(first_name_when_sort_db)
+      expect(console.send(:sort_db).first.name).to eq(first_name_when_sort_db)
     end
   end
 
   describe '#user_input' do
     it do
-      expect(subject).to receive_message_chain(:gets, :chomp, :downcase)
-      subject.send(:user_input)
+      expect(console).to receive_message_chain(:gets, :chomp, :downcase)
+      console.send(:user_input)
     end
   end
 
   describe '#exit_console' do
-    it { expect { subject.send(:exit_console) }.to raise_error(SystemExit) }
+    it { expect { console.send(:exit_console) }.to raise_error(SystemExit) }
   end
 end

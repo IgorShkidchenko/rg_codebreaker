@@ -14,7 +14,7 @@ RSpec.describe Difficult do
   end
 
   describe '.find' do
-    context 'valid' do
+    context 'when valid' do
       it do
         valid_inputs.each do |valid_input|
           expect(described_class.find(valid_input)).not_to eq(nil)
@@ -23,7 +23,7 @@ RSpec.describe Difficult do
       end
     end
 
-    context 'invalid' do
+    context 'when invalid' do
       it do
         invalid_inputs.each do |invalid_input|
           expect(described_class.find(invalid_input)).to eq(nil)
