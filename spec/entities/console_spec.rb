@@ -3,18 +3,19 @@
 RSpec.describe Console do
   subject(:console) { described_class.new }
 
-  let(:user_double) { instance_double('User', name: 'John') }
+  let(:path_to_test_db) { './spec/fixtures/test_database.yaml' }
+  let(:user_double) { instance_double('User', name: valid_name) }
   let(:game_double_with_zeros) { instance_double('Game', attempts: 0, hints: 0) }
-  let(:difficult_double) { instance_double('Difficult', level: Difficult::DIFFICULTIES[:easy]) }
+  let(:difficulty_double) { instance_double('Difficulty', level: Difficulty::DIFFICULTIES[:easy]) }
   let(:game_double) do
-    instance_double('Game', attempts: Difficult::DIFFICULTIES[:easy][:attempts],
-                   hints: Difficult::DIFFICULTIES[:easy][:hints])
+    instance_double('Game', attempts: Difficulty::DIFFICULTIES[:easy][:attempts],
+                            hints: Difficulty::DIFFICULTIES[:easy][:hints])
   end
 
-  let(:path_to_test_db) { './spec/fixtures/test_database.yaml' }
-  let(:valid_path) { [Console::COMMANDS[:start], user_double.name, Difficult::DIFFICULTIES[:easy][:level]] }
-  let(:valid_guess) { Guess::VALID_NUMBERS.sample(4).join }
-  let(:first_name_when_sort_db) { 'Player1' }
+  let(:valid_numbers) { Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s) }
+  let(:valid_path) { [Console::COMMANDS[:start], user_double.name, Difficulty::DIFFICULTIES[:easy][:level]] }
+  let(:valid_guess) { valid_numbers.sample(4).join }
+  let(:valid_name) { 'a' * User::VALID_NAME_SIZE.first }
 
   let(:invalid_guess) { (Game::INCLUDE_IN_GAME_NUMBERS.max + 1).to_s * (Game::CODE_SIZE - 1) }
   let(:invalid_max_length) { 'a' * (User::VALID_NAME_SIZE.max + 1) }
@@ -94,7 +95,7 @@ RSpec.describe Console do
 
     context 'when #choose_difficulty' do
       it do
-        allow(console).to receive(:user_input).and_return(*two_invalid_strings, Difficult::DIFFICULTIES[:easy][:level])
+        allow(console).to receive(:user_input).and_return(*two_invalid_strings, Difficulty::DIFFICULTIES[:easy][:level])
         console.send(:choose_difficulty)
       end
     end
@@ -106,14 +107,14 @@ RSpec.describe Console do
       console.send(:show_hint)
     end
 
-    context 'when with_some_hints' do
+    context 'with_some_hints' do
       it do
         console.instance_variable_set(:@game, game_double)
         expect(Representer).to receive(:showed_hint_msg)
       end
     end
 
-    context 'when with_zero_hints' do
+    context 'with_zero_hints' do
       it do
         console.instance_variable_set(:@game, game_double_with_zeros)
         expect(Representer).to receive(:zero_hints_msg)
@@ -157,7 +158,7 @@ RSpec.describe Console do
     it do
       console.instance_variable_set(:@game, game_double)
       console.instance_variable_set(:@user, user_double)
-      console.instance_variable_set(:@difficult, difficult_double)
+      console.instance_variable_set(:@difficulty, difficulty_double)
       expect(console).to receive(:save_to_db)
       console.send(:save_result)
     end
@@ -165,51 +166,44 @@ RSpec.describe Console do
 
   describe '#lose' do
     it do
-      allow(console).to receive(:main_menu)
-      expect(Representer).to receive(:lose_msg)
+      expect(console).to receive(:start_new_game)
       console.send(:lose)
     end
   end
 
   describe '#win' do
-    after { console.send(:win) }
-
     it 'with_yes' do
-      allow(console).to receive(:main_menu)
       allow(console).to receive(:user_input).and_return(Console::ACCEPT_SAVING_RESULT)
+      allow(console).to receive(:start_new_game)
       expect(console).to receive(:save_result)
+      console.send(:win)
     end
 
     it 'with_no' do
       allow(console).to receive(:user_input) { invalid_min_length }
-      expect(console).to receive(:main_menu)
+      allow(Console).to receive_message_chain(:new, :main_menu)
+      expect(console).not_to receive(:save_result)
+      console.send(:win)
     end
   end
 
   describe '#statistics' do
     before { allow(console).to receive(:main_menu) }
 
-    after { console.send(:statistics) }
-
     context 'when with_empty_db' do
       it do
-        allow(console).to receive(:sort_db).and_return([])
+        allow(console).to receive(:load_db).and_return([])
         expect(Representer).to receive(:empty_db_msg)
+        console.send(:statistics)
       end
     end
 
     context 'when with_not_empty_db' do
       it do
-        stub_const('Uploader::PATH', path_to_test_db)
+        allow(console).to receive(:load_db).and_return([nil])
         expect(Representer).to receive(:show_db)
+        console.send(:statistics)
       end
-    end
-  end
-
-  describe '#sort_db' do
-    it do
-      stub_const('Uploader::PATH', path_to_test_db)
-      expect(console.send(:sort_db).first.name).to eq(first_name_when_sort_db)
     end
   end
 

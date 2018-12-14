@@ -17,8 +17,8 @@ en:
     win: "You win\n-Enter %{yes} if you want to save your progress"
     lose: 'Game over, you lose if you want you can start a new game'
     empty_db: 'You are the first one'
-    select_difficult: 'Select difficulty: %{difficults}'
-    stats_user_info: "%{position}) Name: %{name} Difficult: %{level}\n"
+    select_difficulty: 'Select difficulty: %{difficults}'
+    stats_user_info: "%{position}) Name: %{name} difficulty: %{level}\n"
     stats_lefts: "Attempts: %{all_attempts}/%{attempts} Hints: %{all_hints}/%{hints}"
     rules: "Game Rules\n
       • Codebreaker is a logic game in which a code-breaker tries to break a secret code created by a code-maker. The codemaker, which will be played by the application we’re going to write, creates a secret code of four numbers between 1 and 6.\n

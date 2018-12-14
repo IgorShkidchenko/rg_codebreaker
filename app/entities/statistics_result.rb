@@ -3,11 +3,11 @@
 class StatisticsResult
   attr_reader :left_hints, :left_attempts, :all_attempts, :all_hints, :level, :name
 
-  def initialize(name:, difficult:, game:)
-    @name = name
-    @level = difficult[:level]
-    @all_attempts = difficult[:attempts]
-    @all_hints = difficult[:hints]
+  def initialize(user:, difficulty:, game:)
+    @name = user.name
+    @level = difficulty.level[:level]
+    @all_attempts = difficulty.level[:attempts]
+    @all_hints = difficulty.level[:hints]
     @left_attempts = game.attempts
     @left_hints = game.hints
   end

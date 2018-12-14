@@ -3,7 +3,8 @@
 RSpec.describe Guess do
   subject(:guess) { described_class.new(valid_guess) }
 
-  let(:valid_guess) { Guess::VALID_NUMBERS.sample(4).join }
+  let(:valid_numbers) { Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s) }
+  let(:valid_guess) { valid_numbers.sample(4).join }
   let(:invalid_guess) { (Game::INCLUDE_IN_GAME_NUMBERS.max + 1).to_s * (Game::CODE_SIZE - 1) }
 
   describe '.new' do

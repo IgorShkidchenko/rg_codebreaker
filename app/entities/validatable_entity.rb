@@ -12,6 +12,7 @@ class ValidatableEntity
   end
 
   def valid?
+    validate
     @errors.empty?
   end
 end

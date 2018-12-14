@@ -3,7 +3,6 @@
 class Guess < ValidatableEntity
   attr_reader :input, :errors
 
-  VALID_NUMBERS = Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s)
   HINT = 'hint'
 
   def initialize(input)
@@ -14,15 +13,21 @@ class Guess < ValidatableEntity
   def validate
     return if hint?
 
-    @errors << I18n.t('invalid.include_error') unless check_numbers?(@input, VALID_NUMBERS)
+    @errors << I18n.t('invalid.include_error') unless check_numbers?(@input, valid_numbers)
     @errors << I18n.t('invalid.size_error') unless check_size?(@input, Game::CODE_SIZE)
   end
 
   def as_array_of_numbers
-    @input.chars.map(&:to_i)
+    @as_array_of_numbers ||= @input.chars.map(&:to_i)
   end
 
   def hint?
     @input == HINT
+  end
+
+  private
+
+  def valid_numbers
+    Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s)
   end
 end

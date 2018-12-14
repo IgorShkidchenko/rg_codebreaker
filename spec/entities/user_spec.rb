@@ -3,7 +3,7 @@
 RSpec.describe User do
   subject(:user) { described_class.new(valid_name) }
 
-  let(:valid_name) { 'John' }
+  let(:valid_name) { 'a' * User::VALID_NAME_SIZE.first }
   let(:empty_string) { '' }
 
   describe '.new' do

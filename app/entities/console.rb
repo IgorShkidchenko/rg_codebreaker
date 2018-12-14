@@ -27,27 +27,23 @@ class Console < ValidatableEntity
   private
 
   def statistics
-    db = sort_db
-    db.empty? ? Representer.empty_db_msg : Representer.show_db(db)
-  end
-
-  def sort_db
-    load_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
+    loaded_db = load_db
+    loaded_db.empty? ? Representer.empty_db_msg : Representer.show_db(loaded_db)
   end
 
   def registration
     Representer.what_name_msg
     @user = make_valid_input_for_class(User)
-    @difficult = choose_difficulty
-    @game = Game.new(@difficult.level[:attempts], @difficult.level[:hints])
+    @difficulty = choose_difficulty
+    @game = Game.new(@difficulty)
     make_guess
   end
 
   def choose_difficulty
-    Representer.select_difficult_msg
+    Representer.select_difficulty_msg
     loop do
-      finded_level = Difficult.find(user_input)
-      break finded_level if finded_level
+      finded_level = Difficulty.find(user_input)
+      return finded_level if finded_level
 
       Representer.error_msg(I18n.t('invalid.include_error'))
     end
@@ -63,10 +59,9 @@ class Console < ValidatableEntity
 
   def check_round_result(guess)
     return win if @game.win?(guess)
+    return lose if @game.lose?(guess)
 
     round_result = @game.start_round(guess)
-    return lose if @game.lose?
-
     Representer.round_info_text(round_result, @game.attempts, @game.hints)
   end
 
@@ -76,24 +71,31 @@ class Console < ValidatableEntity
 
   def lose
     Representer.lose_msg
-    main_menu
+    start_new_game
   end
 
   def win
     Representer.win_msg
     save_result if user_input == ACCEPT_SAVING_RESULT
-    main_menu
+    start_new_game
+  end
+
+  def start_new_game
+    Console.new.main_menu
   end
 
   def save_result
-    save_to_db(StatisticsResult.new(name: @user.name, difficult: @difficult.level, game: @game))
+    save_to_db(create_statistics_result)
+  end
+
+  def create_statistics_result
+    StatisticsResult.new(user: @user, difficulty: @difficulty, game: @game)
   end
 
   def make_valid_input_for_class(klass)
     loop do
       input = klass.new(user_input)
-      input.validate
-      break input if input.valid?
+      return input if input.valid?
 
       Representer.error_msg(input.errors.join(', '))
     end

@@ -19,8 +19,8 @@ class Representer
       puts I18n.t('console.what_name')
     end
 
-    def select_difficult_msg
-      puts I18n.t('console.select_difficult', difficults: Difficult::DIFFICULTIES.keys.join(', '))
+    def select_difficulty_msg
+      puts I18n.t('console.select_difficulty', difficults: Difficulty::DIFFICULTIES.keys.join(', '))
     end
 
     def make_guess_msg
@@ -54,8 +54,8 @@ class Representer
       puts I18n.t('console.empty_db')
     end
 
-    def show_db(db)
-      db.each_with_index do |user, index|
+    def show_db(loaded_db)
+      sort_db(loaded_db).each_with_index do |user, index|
         puts I18n.t('console.stats_user_info', position: index + 1, name: user.name, level: user.level)
         puts I18n.t('console.stats_lefts', attempts: user.left_attempts, all_attempts: user.all_attempts,
                                            hints: user.left_hints, all_hints: user.all_hints)
@@ -68,6 +68,12 @@ class Representer
 
     def error_msg(error)
       puts I18n.t('error', error: error)
+    end
+
+    private
+
+    def sort_db(loaded_db)
+      loaded_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
     end
   end
 end

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe StatisticsResult do
-  subject(:statistic) { described_class.new(name: user_name, difficult: difficult.level, game: game) }
+  subject(:statistic) { described_class.new(user: user, difficulty: difficulty, game: game) }
 
-  let(:user_name) { 'John' }
-  let(:difficult) { instance_double('Difficult', level: Difficult::DIFFICULTIES[:easy]) }
+  let(:user) { instance_double('User', name: 'John') }
+  let(:difficulty) { instance_double('difficulty', level: Difficulty::DIFFICULTIES[:easy]) }
   let(:game) { instance_double('Game', attempts: 10, hints: 1) }
 
   describe '.new' do

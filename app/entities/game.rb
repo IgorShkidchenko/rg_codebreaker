@@ -9,11 +9,11 @@ class Game
   GUESS_PLACE = '+'
   GUESS_PRESENCE = '-'
 
-  def initialize(attempts, hints)
+  def initialize(difficulty)
     @breaker_numbers = generate_random_code
     @breaker_numbers_copy = @breaker_numbers.clone.shuffle
-    @hints = hints
-    @attempts = attempts
+    @hints = difficulty.level[:hints]
+    @attempts = difficulty.level[:attempts]
   end
 
   def start_round(user_input)
@@ -33,8 +33,8 @@ class Game
     @breaker_numbers == result
   end
 
-  def lose?
-    @attempts.zero?
+  def lose?(result)
+    @attempts.zero? && @breaker_numbers != result
   end
 
   private

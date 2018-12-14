@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
-RSpec.describe Console do
-  subject(:console) { described_class.new }
+RSpec.describe Validator do
+  subject(:console) { Console.new }
 
   let(:valid_length) { 'a' * User::VALID_NAME_SIZE.first }
-  let(:valid_numbers) { Guess::VALID_NUMBERS.first * Game::CODE_SIZE }
+  let(:valid_numbers) { Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s) }
+  let(:valid_guess) { valid_numbers.sample(4).join }
 
   let(:invalid_max_length) { 'a' * (User::VALID_NAME_SIZE.max + 1) }
   let(:invalid_min_length) { 'a' * (User::VALID_NAME_SIZE.min - 1) }
@@ -17,11 +18,11 @@ RSpec.describe Console do
     end
 
     context 'when #check_numbers true' do
-      it { expect(console.check_numbers?(valid_numbers, Guess::VALID_NUMBERS)).to eq(true) }
+      it { expect(console.check_numbers?(valid_guess, valid_numbers)).to eq(true) }
     end
 
     context 'when #check_size true' do
-      it { expect(console.check_size?(valid_numbers, Game::CODE_SIZE)).to eq(true) }
+      it { expect(console.check_size?(valid_guess, Game::CODE_SIZE)).to eq(true) }
     end
 
     context 'when #check_include true' do
@@ -39,7 +40,7 @@ RSpec.describe Console do
     end
 
     context 'when #check_numbers false?' do
-      it { expect(console.check_numbers?(invalid_numbers_min, Guess::VALID_NUMBERS)).to eq(false) }
+      it { expect(console.check_numbers?(invalid_numbers_min, valid_numbers)).to eq(false) }
     end
 
     context 'when #check_size false?' do
@@ -47,7 +48,7 @@ RSpec.describe Console do
     end
 
     context 'when #check_include false?' do
-      it { expect(console.check_include?(invalid_numbers_max, Guess::VALID_NUMBERS)).to eq(false) }
+      it { expect(console.check_include?(invalid_numbers_max, valid_numbers)).to eq(false) }
     end
   end
 end

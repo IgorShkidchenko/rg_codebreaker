@@ -11,6 +11,6 @@ require_relative './app/entities/game'
 require_relative './app/entities/console'
 require_relative './app/entities/statistics_result'
 require_relative './app/entities/user'
-require_relative './app/entities/difficult'
+require_relative './app/entities/difficulty'
 require_relative './app/entities/guess'
 I18n.load_path << Dir[File.expand_path('locales') + '/*.yml']

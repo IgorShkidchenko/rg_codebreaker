@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe Game do
-  subject(:game) { described_class.new(attempts, hints) }
+  subject(:game) { described_class.new(difficalty_double) }
 
-  let(:attempts) { Difficult::DIFFICULTIES[:easy][:attempts] }
-  let(:hints) { Difficult::DIFFICULTIES[:easy][:hints] }
+  let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:easy]) }
   let(:guess_place) { Game::GUESS_PLACE }
   let(:guess_presence) { Game::GUESS_PRESENCE }
+  let(:array_for_breaker_numbers) { Array.new(Game::CODE_SIZE) { rand(Game::INCLUDE_IN_GAME_NUMBERS) } }
+  let(:shuffled_array_of_breaker_numbers) { array_for_breaker_numbers.map(&:succ) }
 
   describe '.new' do
-    it { expect(game.attempts).to eq(attempts) }
-    it { expect(game.hints).to eq(hints) }
+    it { expect(game.attempts).to eq(Difficulty::DIFFICULTIES[:easy][:attempts]) }
+    it { expect(game.hints).to eq(Difficulty::DIFFICULTIES[:easy][:hints]) }
   end
 
   describe '#hint' do
@@ -36,27 +37,26 @@ RSpec.describe Game do
 
   describe '#lose?' do
     before do
-      game.instance_variable_set(:@breaker_numbers, [6, 6, 6, 6])
+      game.instance_variable_set(:@breaker_numbers, array_for_breaker_numbers)
       game.instance_variable_set(:@attempts, 1)
     end
 
     context 'when lose_eq_false' do
-      it { expect(game.lose?).to eq false }
+      it { expect(game.lose?(shuffled_array_of_breaker_numbers)).to eq false }
     end
 
     context 'when lose_eq_true' do
       it do
-        game.start_round([1, 2, 3, 4])
-        expect(game.lose?).to eq true
+        result = game.start_round(shuffled_array_of_breaker_numbers)
+        expect(game.lose?(result)).to eq true
       end
     end
   end
 
   describe '#win?' do
-    let(:guess) { [1, 2, 3, 4] }
-    let(:numbers_for_lose) { [1, 1, 1, 1] }
+    let(:guess) { array_for_breaker_numbers }
 
-    before { game.instance_variable_set(:@breaker_numbers, [1, 2, 3, 4]) }
+    before { game.instance_variable_set(:@breaker_numbers, array_for_breaker_numbers) }
 
     context 'when win_eq_all_guessed' do
       it { expect(game.instance_variable_get(:@breaker_numbers)).to eq(guess) }
@@ -67,7 +67,7 @@ RSpec.describe Game do
     end
 
     context 'when win_eq_false' do
-      it { expect(game.win?(numbers_for_lose)).to eq false }
+      it { expect(game.win?(shuffled_array_of_breaker_numbers)).to eq false }
     end
   end
 
@@ -160,7 +160,7 @@ RSpec.describe Game do
       [[1, 2, 3, 4], [6, 6, 6, 6], []],
       [[1, 2, 3, 4], [2, 5, 5, 2], [Game::GUESS_PRESENCE]]
     ].each do |item|
-      it "should return #{item[2]} if code is - #{item[0]}, atttempt_code is #{item[1]}" do
+      it "when result is #{item[2]} if code is - #{item[0]}, guess is #{item[1]}" do
         game.instance_variable_set(:@breaker_numbers, item[0])
         guess = item[1]
         expect(game.start_round(guess)).to eq item[2]
