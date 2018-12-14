@@ -1,2 +1,2 @@
 coverage
-spec/fixtures/test_database.yaml
+#spec/fixtures/*
