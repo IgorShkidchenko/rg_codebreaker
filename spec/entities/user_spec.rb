@@ -1,40 +1,44 @@
 # frozen_string_literal: true
 
-RSpec.describe User do
-  subject(:user) { described_class.new(valid_name) }
+require 'spec_helper'
 
-  let(:valid_name) { 'a' * User::VALID_NAME_SIZE.first }
-  let(:empty_string) { '' }
+module Codebreaker
+  RSpec.describe User do
+    subject(:user) { described_class.new(valid_name) }
 
-  describe '.new' do
-    it { expect(user.name).to eq(valid_name) }
-    it { expect(user.instance_variable_get(:@errors)).to eq([]) }
-  end
+    let(:valid_name) { 'a' * User::VALID_NAME_SIZE.first }
+    let(:empty_string) { '' }
 
-  describe 'valid' do
-    before { user.validate }
-
-    context 'when #validate true' do
-      it { expect(user.errors.empty?).to eq(true) }
+    describe '.new' do
+      it { expect(user.name).to eq(valid_name) }
+      it { expect(user.instance_variable_get(:@errors)).to eq([]) }
     end
 
-    context 'when #valid? true' do
-      it { expect(user.valid?).to eq(true) }
-    end
-  end
+    describe 'valid' do
+      before { user.validate }
 
-  describe 'invalid' do
-    before do
-      user.instance_variable_set(:@name, empty_string)
-      user.validate
-    end
+      context 'when #validate true' do
+        it { expect(user.errors.empty?).to eq(true) }
+      end
 
-    context 'when #validate false' do
-      it { expect(user.errors).to eq([I18n.t('invalid.cover_error')]) }
+      context 'when #valid? true' do
+        it { expect(user.valid?).to eq(true) }
+      end
     end
 
-    context 'when #valid? false' do
-      it { expect(user.valid?).to eq(false) }
+    describe 'invalid' do
+      before do
+        user.instance_variable_set(:@name, empty_string)
+        user.validate
+      end
+
+      context 'when #validate false' do
+        it { expect(user.errors).to eq([I18n.t('invalid.cover_error')]) }
+      end
+
+      context 'when #valid? false' do
+        it { expect(user.valid?).to eq(false) }
+      end
     end
   end
 end

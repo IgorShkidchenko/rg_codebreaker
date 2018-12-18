@@ -1,24 +1,28 @@
 # frozen_string_literal: true
 
-RSpec.describe Uploader do
-  subject(:console) { Console.new }
+require 'spec_helper'
 
-  let(:path) { 'spec/fixtures/test_database.yml' }
-  let(:result_double) { double('ResultStatistics') }
+module Codebreaker
+  RSpec.describe Uploader do
+    subject(:console) { Codebreaker::Console.new }
 
-  before do
-    File.new(path, 'w+')
-    stub_const('Uploader::PATH', path)
-    console.save_to_db(result_double)
-  end
+    let(:path) { 'spec/fixtures/test_database.yml' }
+    let(:result_double) { double('ResultStatistics') }
 
-  after { File.delete(path) }
+    before do
+      File.new(path, 'w+')
+      stub_const('Codebreaker::Uploader::PATH', path)
+      console.save_to_db(result_double)
+    end
 
-  describe '#save_to_db' do
-    it { expect { console.save_to_db(result_double) }.to change { console.load_db.count }.by(1) }
-  end
+    after { File.delete(path) }
 
-  describe '#load_db' do
-    it { expect(console.load_db.empty?).to eq(false) }
+    describe '#save_to_db' do
+      it { expect { console.save_to_db(result_double) }.to change { console.load_db.count }.by(1) }
+    end
+
+    describe '#load_db' do
+      it { expect(console.load_db.empty?).to eq(false) }
+    end
   end
 end

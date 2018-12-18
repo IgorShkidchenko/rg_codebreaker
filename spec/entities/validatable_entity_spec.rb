@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
-RSpec.describe ValidatableEntity do
-  subject(:validatable_entity) { described_class.new }
+require 'spec_helper'
 
-  let(:some_error) { 'Invalid input' }
+module Codebreaker
+  RSpec.describe ValidatableEntity do
+    subject(:validatable_entity) { described_class.new }
 
-  describe '.new' do
-    it { expect(validatable_entity.instance_variable_get(:@errors)).to eq([]) }
-  end
+    let(:some_error) { 'Invalid input' }
 
-  describe 'when #validate raise' do
-    it { expect { validatable_entity.validate }.to raise_error(NotImplementedError) }
+    describe '.new' do
+      it { expect(validatable_entity.instance_variable_get(:@errors)).to eq([]) }
+    end
+
+    describe 'when #validate raise' do
+      it { expect { validatable_entity.validate }.to raise_error(NotImplementedError) }
+    end
   end
 end
