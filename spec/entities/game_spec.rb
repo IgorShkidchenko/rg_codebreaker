@@ -41,7 +41,7 @@ module Codebreaker
     describe '#lose?' do
       before do
         game.instance_variable_set(:@breaker_numbers, array_for_breaker_numbers)
-        game.instance_variable_set(:@attempts, 1)
+        game.instance_variable_set(:@attempts, 2)
       end
 
       context 'when lose_eq_false' do

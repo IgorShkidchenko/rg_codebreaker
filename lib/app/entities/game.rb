@@ -35,7 +35,7 @@ module Codebreaker
     end
 
     def lose?(result)
-      @attempts.zero? && @breaker_numbers != result
+      @attempts == 1 && @breaker_numbers != result
     end
 
     private
