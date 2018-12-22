@@ -11,7 +11,7 @@ module Codebreaker
     GUESS_PRESENCE = '-'
 
     def initialize(difficulty, user)
-      p @breaker_numbers = generate_random_code
+      @breaker_numbers = generate_random_code
       @breaker_numbers_copy = @breaker_numbers.clone.shuffle
       @hints = difficulty.level[:hints]
       @attempts = difficulty.level[:attempts]
