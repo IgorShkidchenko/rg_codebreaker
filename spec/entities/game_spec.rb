@@ -4,9 +4,11 @@ require 'spec_helper'
 
 module Codebreaker
   RSpec.describe Game do
-    subject(:game) { described_class.new(difficalty_double) }
+    subject(:game) { described_class.new(difficalty_double, user_double) }
 
+    let(:valid_name) { 'a' * User::VALID_NAME_SIZE.min }
     let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:easy]) }
+    let(:user_double) { instance_double('User', name: valid_name) }
     let(:guess_place) { Game::GUESS_PLACE }
     let(:guess_presence) { Game::GUESS_PRESENCE }
     let(:array_for_breaker_numbers) { Array.new(Game::CODE_SIZE) { rand(Game::INCLUDE_IN_GAME_NUMBERS) } }

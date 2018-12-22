@@ -160,8 +160,7 @@ module Codebreaker
     describe 'save_result' do
       it do
         console.instance_variable_set(:@game, game_double)
-        console.instance_variable_set(:@user, user_double)
-        console.instance_variable_set(:@difficulty, difficulty_double)
+        expect(console.instance_variable_get(:@game)).to receive(:to_h)
         expect(console).to receive(:save_to_db)
         console.send(:save_result)
       end

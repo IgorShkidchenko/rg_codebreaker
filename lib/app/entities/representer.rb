@@ -57,9 +57,9 @@ module Codebreaker
 
       def show_db(loaded_db)
         sort_db(loaded_db).each_with_index do |user, index|
-          puts I18n.t('console.stats_user_info', position: index + 1, name: user.name, level: user.level)
-          puts I18n.t('console.stats_lefts', attempts: user.left_attempts, all_attempts: user.all_attempts,
-                                             hints: user.left_hints, all_hints: user.all_hints)
+          puts I18n.t('console.stats_user_info', position: index + 1, name: user[:name], level: user[:level])
+          puts I18n.t('console.stats_lefts', attempts: user[:left_attempts], all_attempts: user[:all_attempts],
+                                             hints: user[:left_hints], all_hints: user[:all_hints])
         end
       end
 
@@ -74,7 +74,7 @@ module Codebreaker
       private
 
       def sort_db(loaded_db)
-        loaded_db.sort_by { |user| [user.all_attempts, -user.left_attempts, -user.left_hints] }
+        loaded_db.sort_by { |user| [user[:all_attempts], -user[:left_attempts], -user[:left_hints]] }
       end
     end
   end

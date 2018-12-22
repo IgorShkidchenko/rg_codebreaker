@@ -10,11 +10,13 @@ module Codebreaker
     GUESS_PLACE = '+'
     GUESS_PRESENCE = '-'
 
-    def initialize(difficulty)
-      @breaker_numbers = generate_random_code
+    def initialize(difficulty, user)
+      p @breaker_numbers = generate_random_code
       @breaker_numbers_copy = @breaker_numbers.clone.shuffle
       @hints = difficulty.level[:hints]
       @attempts = difficulty.level[:attempts]
+      @difficulty = difficulty
+      @user_name = user.name
     end
 
     def start_round(user_input)
@@ -36,6 +38,17 @@ module Codebreaker
 
     def lose?(result)
       @attempts == 1 && @breaker_numbers != result
+    end
+
+    def to_h
+      {
+        name: @user_name,
+        level: @difficulty.level[:level],
+        all_hints: @difficulty.level[:hints],
+        all_attempts: @difficulty.level[:attempts],
+        left_hints: @hints,
+        left_attempts: @attempts
+      }
     end
 
     private

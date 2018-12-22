@@ -36,7 +36,7 @@ module Codebreaker
       Representer.what_name_msg
       @user = make_valid_input_for_class(User)
       @difficulty = choose_difficulty
-      @game = Game.new(@difficulty)
+      @game = Game.new(@difficulty, @user)
       make_guess
     end
 
@@ -86,11 +86,7 @@ module Codebreaker
     end
 
     def save_result
-      save_to_db(create_statistics_result)
-    end
-
-    def create_statistics_result
-      StatisticsResult.new(user: @user, difficulty: @difficulty, game: @game)
+      save_to_db(@game.to_h)
     end
 
     def make_valid_input_for_class(klass)

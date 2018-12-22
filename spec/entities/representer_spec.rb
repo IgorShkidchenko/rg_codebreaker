@@ -4,14 +4,13 @@ require 'spec_helper'
 
 module Codebreaker
   RSpec.describe Representer do
-    let(:first_name_when_sort_db) { 'Player1' }
     let(:difficulty_keys) { Difficulty::DIFFICULTIES.keys.join(', ') }
     let(:arg) { 1 }
     let(:error) { 'Invalid error' }
-    let(:first_result) do
-      instance_double('StatisticsResult', name: first_name_when_sort_db, all_attempts: 15,
-                                          all_hints: 2, level: 'easy', left_attempts: 10, left_hints: 1)
-    end
+    let(:game_double) { instance_double('Game', difficulty: difficalty_double, user: user_double) }
+    let(:valid_name) { 'a' * User::VALID_NAME_SIZE.min }
+    let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:easy]) }
+    let(:user_double) { instance_double('User', name: valid_name) }
 
     describe '.console_msg' do
       it { expect { described_class.greeting_msg }.to output(/Hello, lets play the 'Codebreaker' game/).to_stdout }
@@ -25,7 +24,6 @@ module Codebreaker
       it { expect { described_class.win_msg }.to output(/You win/).to_stdout }
       it { expect { described_class.lose_msg }.to output(/Game over/).to_stdout }
       it { expect { described_class.empty_db_msg }.to output(/You are the first one/).to_stdout }
-      it { expect { described_class.show_db([first_result]) }.to output(/Name: #{first_result.name} diff/).to_stdout }
       it { expect { described_class.show_rules }.to output(/Codebreaker is a logic game in which/).to_stdout }
     end
 
@@ -40,13 +38,11 @@ module Codebreaker
     describe '#sort_db' do
       it do
         results = Array.new(5) do |index|
-          instance_double('StatisticsResult', name: "Player#{index + 2}", all_attempts: 15,
-                                              all_hints: 2, level: 'easy', left_attempts: index, left_hints: 10 - index)
+          { name: "Player#{index + 2}", all_attempts: 15,
+            all_hints: 2, level: 'easy', left_attempts: index, left_hints: 10 - index }
         end
 
-        results << first_result
-        expect(described_class.send(:sort_db, results).first.name).to eq(first_name_when_sort_db)
-        expect(described_class.send(:sort_db, results).last.name).to eq(results.first.name)
+        expect(described_class.send(:sort_db, results).first[:name]).to eq(results.last[:name])
       end
     end
   end

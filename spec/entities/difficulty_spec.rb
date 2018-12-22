@@ -6,14 +6,14 @@ module Codebreaker
   RSpec.describe Difficulty do
     let(:valid_inputs) do
       [Difficulty::DIFFICULTIES[:easy][:level],
-      Difficulty::DIFFICULTIES[:medium][:level],
-      Difficulty::DIFFICULTIES[:hell][:level]]
+       Difficulty::DIFFICULTIES[:medium][:level],
+       Difficulty::DIFFICULTIES[:hell][:level]]
     end
 
     let(:invalid_inputs) do
       [Difficulty::DIFFICULTIES[:easy][:level].succ,
-      Difficulty::DIFFICULTIES[:medium][:level].succ,
-      Difficulty::DIFFICULTIES[:hell][:level].succ]
+       Difficulty::DIFFICULTIES[:medium][:level].succ,
+       Difficulty::DIFFICULTIES[:hell][:level].succ]
     end
 
     describe '.find' do
