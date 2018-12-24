@@ -5,22 +5,22 @@ module Codebreaker
     attr_reader :level
 
     DIFFICULTIES = {
-      easy: {
+      simple: {
         hints: 2,
         attempts: 15,
-        level: 'easy'
+        level: 'simple'
       },
 
-      medium: {
+      middle: {
         hints: 1,
         attempts: 10,
-        level: 'medium'
+        level: 'middle'
       },
 
-      hell: {
+      hard: {
         hints: 1,
         attempts: 5,
-        level: 'hell'
+        level: 'hard'
       }
     }.freeze
 

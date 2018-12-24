@@ -9,14 +9,14 @@ module Codebreaker
     let(:path_to_test_db) { './spec/fixtures/test_database.yaml' }
     let(:user_double) { instance_double('User', name: valid_name) }
     let(:game_double_with_zeros) { instance_double('Game', attempts: 0, hints: 0) }
-    let(:difficulty_double) { instance_double('Difficulty', level: Difficulty::DIFFICULTIES[:easy]) }
+    let(:difficulty_double) { instance_double('Difficulty', level: Difficulty::DIFFICULTIES[:simple]) }
     let(:game_double) do
-      instance_double('Game', attempts: Difficulty::DIFFICULTIES[:easy][:attempts],
-                              hints: Difficulty::DIFFICULTIES[:easy][:hints])
+      instance_double('Game', attempts: Difficulty::DIFFICULTIES[:simple][:attempts],
+                              hints: Difficulty::DIFFICULTIES[:simple][:hints])
     end
 
     let(:valid_numbers) { Game::INCLUDE_IN_GAME_NUMBERS.map(&:to_s) }
-    let(:valid_path) { [Console::COMMANDS[:start], user_double.name, Difficulty::DIFFICULTIES[:easy][:level]] }
+    let(:valid_path) { [Console::COMMANDS[:start], user_double.name, Difficulty::DIFFICULTIES[:simple][:level]] }
     let(:valid_guess) { valid_numbers.sample(4).join }
     let(:valid_name) { 'a' * User::VALID_NAME_SIZE.first }
 
@@ -98,7 +98,7 @@ module Codebreaker
 
       context 'when #choose_difficulty' do
         it do
-          allow(console).to receive(:user_input).and_return(*two_invalid_strings, Difficulty::DIFFICULTIES[:easy][:level])
+          allow(console).to receive(:user_input).and_return(*two_invalid_strings, Difficulty::DIFFICULTIES[:simple][:level])
           console.send(:choose_difficulty)
         end
       end

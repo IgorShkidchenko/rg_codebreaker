@@ -7,7 +7,7 @@ module Codebreaker
     subject(:game) { described_class.new(difficalty_double, user_double) }
 
     let(:valid_name) { 'a' * User::VALID_NAME_SIZE.min }
-    let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:easy]) }
+    let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:simple]) }
     let(:user_double) { instance_double('User', name: valid_name) }
     let(:guess_place) { Game::GUESS_PLACE }
     let(:guess_presence) { Game::GUESS_PRESENCE }
@@ -15,8 +15,8 @@ module Codebreaker
     let(:shuffled_array_of_breaker_numbers) { array_for_breaker_numbers.map(&:succ) }
 
     describe '.new' do
-      it { expect(game.attempts).to eq(Difficulty::DIFFICULTIES[:easy][:attempts]) }
-      it { expect(game.hints).to eq(Difficulty::DIFFICULTIES[:easy][:hints]) }
+      it { expect(game.attempts).to eq(Difficulty::DIFFICULTIES[:simple][:attempts]) }
+      it { expect(game.hints).to eq(Difficulty::DIFFICULTIES[:simple][:hints]) }
     end
 
     describe '#hint' do

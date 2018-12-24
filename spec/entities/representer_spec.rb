@@ -9,7 +9,7 @@ module Codebreaker
     let(:error) { 'Invalid error' }
     let(:game_double) { instance_double('Game', difficulty: difficalty_double, user: user_double) }
     let(:valid_name) { 'a' * User::VALID_NAME_SIZE.min }
-    let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:easy]) }
+    let(:difficalty_double) { instance_double('Difficalty', level: Difficulty::DIFFICULTIES[:simple]) }
     let(:user_double) { instance_double('User', name: valid_name) }
 
     describe '.console_msg' do
@@ -39,7 +39,7 @@ module Codebreaker
       it do
         results = Array.new(5) do |index|
           { name: "Player#{index + 2}", all_attempts: 15,
-            all_hints: 2, level: 'easy', left_attempts: index, left_hints: 10 - index }
+            all_hints: 2, level: 'simple', left_attempts: index, left_hints: 10 - index }
         end
 
         expect(described_class.send(:sort_db, results).first[:name]).to eq(results.last[:name])

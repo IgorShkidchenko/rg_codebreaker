@@ -2,7 +2,7 @@
 
 module Codebreaker
   class Game
-    attr_reader :hints, :attempts
+    attr_reader :hints, :attempts, :difficulty, :breaker_numbers, :showed_hints, :player_name
 
     INCLUDE_IN_GAME_NUMBERS = (1..6).freeze
     CODE_SIZE = 4
@@ -11,12 +11,13 @@ module Codebreaker
     GUESS_PRESENCE = '-'
 
     def initialize(difficulty, user)
-      p @breaker_numbers = generate_random_code
+      @breaker_numbers = generate_random_code
       @breaker_numbers_copy = @breaker_numbers.clone.shuffle
       @hints = difficulty.level[:hints]
       @attempts = difficulty.level[:attempts]
-      @difficulty = difficulty
-      @user_name = user.name
+      @difficulty = difficulty.level
+      @player_name = user.name
+      @showed_hints = []
     end
 
     def start_round(user_input)
@@ -29,7 +30,8 @@ module Codebreaker
       return if @hints.zero?
 
       @hints -= 1
-      @breaker_numbers_copy.pop
+      @showed_hints << @breaker_numbers_copy.pop
+      @showed_hints.last
     end
 
     def win?(result)
@@ -42,12 +44,13 @@ module Codebreaker
 
     def to_h
       {
-        name: @user_name,
-        level: @difficulty.level[:level],
-        all_hints: @difficulty.level[:hints],
-        all_attempts: @difficulty.level[:attempts],
+        player_name: @player_name,
+        level: @difficulty[:level],
+        all_hints: @difficulty[:hints],
+        all_attempts: @difficulty[:attempts],
         left_hints: @hints,
-        left_attempts: @attempts
+        left_attempts: @attempts,
+        date: Time.now
       }
     end
 

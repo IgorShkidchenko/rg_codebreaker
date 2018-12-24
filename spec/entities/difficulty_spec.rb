@@ -5,15 +5,15 @@ require 'spec_helper'
 module Codebreaker
   RSpec.describe Difficulty do
     let(:valid_inputs) do
-      [Difficulty::DIFFICULTIES[:easy][:level],
-       Difficulty::DIFFICULTIES[:medium][:level],
-       Difficulty::DIFFICULTIES[:hell][:level]]
+      [Difficulty::DIFFICULTIES[:simple][:level],
+       Difficulty::DIFFICULTIES[:middle][:level],
+       Difficulty::DIFFICULTIES[:hard][:level]]
     end
 
     let(:invalid_inputs) do
-      [Difficulty::DIFFICULTIES[:easy][:level].succ,
-       Difficulty::DIFFICULTIES[:medium][:level].succ,
-       Difficulty::DIFFICULTIES[:hell][:level].succ]
+      [Difficulty::DIFFICULTIES[:simple][:level].succ,
+       Difficulty::DIFFICULTIES[:middle][:level].succ,
+       Difficulty::DIFFICULTIES[:hard][:level].succ]
     end
 
     describe '.find' do
