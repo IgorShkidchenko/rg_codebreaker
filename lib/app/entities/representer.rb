@@ -71,8 +71,6 @@ module Codebreaker
         puts I18n.t('error', error: error)
       end
 
-      private
-
       def sort_db(loaded_db)
         loaded_db.sort_by { |user| [user[:all_attempts], -user[:left_attempts], -user[:left_hints]] }
       end
