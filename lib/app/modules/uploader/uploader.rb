@@ -8,7 +8,7 @@ module Codebreaker
     PATH = PATH_FOLDER + PATH_NAME + PATH_FORMAT
 
     def load_db
-      YAML.load_stream(File.open(PATH))
+      File.exist?(PATH) ? YAML.load_stream(File.open(PATH)) : []
     end
 
     def save_to_db(results)

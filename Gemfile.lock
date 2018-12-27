@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    codebreaker_rack (0.1.0)
+    codebreaker_Shkidchenko (0.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -68,7 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
-  codebreaker_rack!
+  codebreaker_Shkidchenko!
   fasterer
   i18n
   pry
