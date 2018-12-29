@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+require 'i18n'
+require 'yaml'
+require_relative './config/i18n'
+require_relative './lib/app/modules/uploader/uploader'
+require_relative './lib/app/modules/validator/validator'
+require_relative './lib/app/entities/validatable_entity'
+require_relative './lib/app/entities/navigator'
+require_relative './lib/app/entities/representer'
+require_relative './lib/app/entities/game'
+require_relative './lib/app/entities/console'
+require_relative './lib/app/entities/user'
+require_relative './lib/app/entities/difficulty'
+require_relative './lib/app/entities/guess'
